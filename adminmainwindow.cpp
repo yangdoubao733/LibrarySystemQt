@@ -5,6 +5,7 @@
 #include "File.h"
 #include <qstandarditemmodel.h>
 #include <QMessageBox>
+#include "Linklist.h"
 
 AdminMainWindow::AdminMainWindow(QWidget *parent)
     : QWidget(parent)
@@ -19,10 +20,6 @@ AdminMainWindow::AdminMainWindow(QWidget *parent)
     bookList bl;
     bl = readBookFile(BOOKPATH);
     book* book = bl->next;
-    QString current_bookName = ui->bookName->text();
-    QString current_ISBN = ui->ISBN->text();
-    QString current_autho = ui->Author->text();
-    QString current_year = ui->Year->text();
     //设置标题
     QStandardItemModel* model = new QStandardItemModel(0, 5, this);
 	model->setHorizontalHeaderLabels({ "id", "书名", "作者" ,"ISBN", "出版日期" });//设置表头
@@ -38,6 +35,7 @@ AdminMainWindow::AdminMainWindow(QWidget *parent)
 		book = book->next;
     }
     ui->bookTableView->setModel(model);
+	DeleteLinkList(bl); //释放链表内存
 }
 
 AdminMainWindow::~AdminMainWindow()
@@ -90,7 +88,12 @@ void AdminMainWindow::on_searchBookButton_clicked()
 	//查找图书
 	bookList foundBook;
 	book toSearchBook;
-
+    //初始化链表
+    foundBook = (bookList)new book;
+    if (foundBook == NULL) {
+        return;
+    }
+    foundBook->next = NULL;
     if (current_bookName.isEmpty() && current_ISBN.isEmpty() && current_author.isEmpty() && current_year.isEmpty()) {
         foundBook = bl->next; //如果没有输入任何条件，则显示所有图书
     }
@@ -123,7 +126,11 @@ void AdminMainWindow::on_searchBookButton_clicked()
         if (!current_ISBN.isEmpty() && foundBook) {
             int i = 0;
             bookList tempList = foundBook;
-            foundBook = NULL;
+            foundBook = (bookList)new book;
+            if (foundBook == NULL) {
+                return;
+            }
+            foundBook->next = NULL;
             SearchBook(toSearchBook, tempList, 'i', foundBook, i);
         }
 
@@ -131,7 +138,11 @@ void AdminMainWindow::on_searchBookButton_clicked()
         if (!current_author.isEmpty() && foundBook ) {
             int i = 0;
             bookList tempList = foundBook;
-            foundBook = NULL;
+            foundBook = (bookList)new book;
+            if (foundBook == NULL) {
+                return;
+            }
+            foundBook->next = NULL;
             SearchBook(toSearchBook, tempList, 'a', foundBook, i);
         }
 
@@ -139,7 +150,11 @@ void AdminMainWindow::on_searchBookButton_clicked()
         if (!current_year.isEmpty() && foundBook) {
             int i = 0;
             bookList tempList = foundBook;
-            foundBook = NULL;
+            foundBook = (bookList)new book;
+            if (foundBook == NULL) {
+                return;
+            }
+            foundBook->next = NULL;
             SearchBook(toSearchBook, tempList, 'y', foundBook, i);
         }
 
@@ -164,18 +179,61 @@ void AdminMainWindow::on_searchBookButton_clicked()
         foundBook = foundBook->next;
     }
     ui->bookTableView->setModel(model);
+	DeleteLinkList(foundBook); //释放链表内存
+	DeleteLinkList(bl); //释放链表内存
 }
 
 //图书页面 添加图书
 void AdminMainWindow::on_addBookButton_clicked()
 {
+    book addedBook;
+	addedBook.name = ui->bookName->text().toUtf8().data();
+	addedBook.ISBN = ui->ISBN->text().toInt();
+	addedBook.author = ui->Author->text().toUtf8().data();
+	addedBook.year = ui->Year->text().toInt();
 
+	bookList bl;
+    bl = readBookFile(BOOKPATH);
+    if (bl == NULL) {
+		QMessageBox::warning(this, "错误", "无法读取图书文件！", QMessageBox::Ok);
+        return;
+    }
+    if (!AddBook(addedBook, bl)) {
+        QMessageBox::warning(this, "错误", "图书添加失败！", QMessageBox::Ok);
+        return;
+    }
+	writeBookFile(BOOKPATH, bl); //写入文件
+	DeleteLinkList(bl); //释放链表内存
 }
 
 //图书页面 删除图书
 void AdminMainWindow::on_deleteBookButton_clicked()
 {
 
+    QList<QModelIndex> list = ui->bookTableView->selectionModel()->selectedIndexes();
+    if(!list.isEmpty()) {
+        QMessageBox::warning(this, "错误", "请先选择要删除的图书！", QMessageBox::Ok);
+        return;
+	}
+
+	book deletedBook;
+	deletedBook.id = list[0].data().toInt(); //获取选中图书的id
+	deletedBook.name = list[1].data().toString().toUtf8().data();
+    deletedBook.author = list[2].data().toString().toUtf8().data();
+	deletedBook.ISBN = list[3].data().toInt();
+	deletedBook.year = list[4].data().toInt();
+    bookList bl;
+    bl = readBookFile(BOOKPATH);
+    if (bl == NULL) {
+        QMessageBox::warning(this, "错误", "无法读取图书文件！", QMessageBox::Ok);
+        return;
+    }
+    if (!DeleteBook(deletedBook, bl)) {
+        QMessageBox::warning(this, "错误", "图书删除失败！", QMessageBox::Ok);
+        return;
+    }
+    writeBookFile(BOOKPATH, bl); //写入文件
+    DeleteLinkList(bl); //释放链表内存
 }
 
 //用户页面跳转图书页面

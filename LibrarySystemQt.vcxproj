@@ -191,8 +191,10 @@
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="editbook.cpp" />
     <ClCompile Include="File.cpp" />
+    <ClCompile Include="Linklist.cpp" />
     <ClCompile Include="login.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="User.cpp" />
     <ClCompile Include="usermainwindow.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +229,7 @@
     <ClInclude Include="Book.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="User.h" />
+    <ClInclude Include="Linklist.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(QtMsBuild)\qt.targets" Condition="Exists('$(QtMsBuild)\qt.targets')" />

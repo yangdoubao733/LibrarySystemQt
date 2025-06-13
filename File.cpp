@@ -3,15 +3,15 @@
 
 bookList readBookFile(const char* fileName) {//读取文件返回链表头指针
 }
-void writeBookFile(const char* fileName, book* head) {//将链表写入文件
+void writeBookFile(const char* fileName, bookList head) {//将链表写入文件
 }
 
-UserList readUserFile(const char* fileName) {//读取文件返回链表头指针
+userList readUserFile(const char* fileName) {//读取文件返回链表头指针
 }
-void writeUserFile(const char* fileName, book* head) {//将链表写入文件
+void writeUserFile(const char* fileName, bookList head) {//将链表写入文件
 }
 
-AdminList readAdminFile(const char* fileName) {//读取文件返回链表头指针
+adminList readAdminFile(const char* fileName) {//读取文件返回链表头指针
 }
-void writeAdminFile(const char* fileName, book* head) {//将链表写入文件
+void writeAdminFile(const char* fileName, bookList head) {//将链表写入文件
 }

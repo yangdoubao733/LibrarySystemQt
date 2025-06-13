@@ -27,14 +27,14 @@ void login::on_loginButton_clicked()
     QString current_username = ui->userName->text();
     QString current_password = ui->password->text();
     //判断是否是管理员
-    AdminList alist;
+    adminList alist;
     alist = readAdminFile(ADMINPATH);
-    Admin* a = alist->next;
+    admin* a = alist->next;
     while (a && flag == 0) {
         QString username(a->username);
         QString password(a->password);
         if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
-            Admin* temp = alist;
+            admin* temp = alist;
             while (alist) { //清理链表内存
                 temp = alist->next;
                 delete alist;
@@ -48,14 +48,14 @@ void login::on_loginButton_clicked()
         a = a->next;
     }
     //判断是否为普通用户
-    UserList ulist;
+    userList ulist;
     ulist = readUserFile(USERPATH);
-    User* u = ulist->next;
+    user* u = ulist->next;
     while (u && flag == 0) {
         QString username(u->username);
         QString password(u->password);
         if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
-            User* temp = ulist;
+            user* temp = ulist;
             while (ulist) { //清理链表内存
                 temp = ulist->next;
                 delete ulist;
