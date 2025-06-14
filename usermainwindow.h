@@ -15,6 +15,36 @@ public:
     explicit UserMainWindow(QWidget *parent = nullptr);
     ~UserMainWindow();
 
+private slots:
+    void on_BorrowManage_clicked();
+
+    void on_ReturnManage_clicked();
+
+    void on_exitButton_clicked();
+
+    void on_searchBookButton_clicked();
+
+    void on_borrowBookButton_clicked();
+
+    void on_lineEdit_returnPressed();
+
+    void on_BorrowManage_2_clicked();
+
+    void on_ReturnManage_2_clicked();
+
+    void on_exitButton_3_clicked();
+
+    void on_BookManage_2_clicked();
+
+    void on_userManage_2_clicked();
+
+    void on_exitButton_2_clicked();
+
+    void on_searchButton_clicked();
+
+    void on_returnButton_clicked();
+
+
 private:
     Ui::UserMainWindow *ui;
 };

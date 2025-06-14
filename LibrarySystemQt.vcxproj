@@ -193,6 +193,7 @@
     <ClCompile Include="File.cpp" />
     <ClCompile Include="login.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="User.cpp" />
     <ClCompile Include="usermainwindow.cpp" />
   </ItemGroup>
   <ItemGroup>
