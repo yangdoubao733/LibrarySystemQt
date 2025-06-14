@@ -10,6 +10,7 @@
 #include <string.h>
 
 
+
 UserMainWindow::UserMainWindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::UserMainWindow)
@@ -136,7 +137,6 @@ void UserMainWindow::on_searchBookButton_clicked()
     }
     ui->tableView->setModel(model);
 }
-
 
 //借阅页面 借阅图书
 void UserMainWindow::on_borrowBookButton_clicked()

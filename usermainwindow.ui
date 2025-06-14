@@ -179,18 +179,6 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="1" alignment="Qt::AlignmentFlag::AlignHCenter">
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>书名</string>
-        </property>
-       </widget>
-      </item>
       <item row="4" column="0">
        <widget class="QPushButton" name="exitButton">
         <property name="font">
@@ -294,6 +282,18 @@
          <font>
           <pointsize>10</pointsize>
          </font>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>书名</string>
         </property>
        </widget>
       </item>

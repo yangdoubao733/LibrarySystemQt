@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 // 查找用户函数，method为查找方式，foundBook为存放查找结果的数组，i为当前查找结果的数量
 bool SearchUser(user User, userList L, char method, userList foundUser, int& i) {
 	user* p = L->next;  // 指向链表的第一个用户
