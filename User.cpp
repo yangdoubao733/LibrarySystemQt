@@ -18,16 +18,24 @@ bool SearchUser(user User, userList L, char method, userList foundUser, int& i) 
 	}
 	while (p) {
 		switch (method) {  // 根据方法查找用户
-			case 'i':  // 按ID查找
-				if (p->id == User.id) {
+			case 'n':  // 按用户名查找
+				if (strcmp(p->name, User.name) == 0) {
 					user* newUser = new user(*p);  // 创建新用户
 					fu->next = newUser;  // 将找到的用户信息存入数组
 					i++;  // 增加已找到的用户数量
 					return true;
 				}
 				break;
-			case 'n':  // 按用户名查找
+			case 'u':  // 按账号查找
 				if (strcmp(p->username, User.username) == 0) {
+					user* newUser = new user(*p);  // 创建新用户
+					fu->next = newUser;  // 将找到的用户信息存入数组
+					i++;  // 增加已找到的用户数量
+					return true;
+				}
+				break;
+			case 'p':  // 按密码查找
+				if (strcmp(p->password, User.password) == 0) {
 					user* newUser = new user(*p);  // 创建新用户
 					fu->next = newUser;  // 将找到的用户信息存入数组
 					i++;  // 增加已找到的用户数量
