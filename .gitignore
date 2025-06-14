@@ -65,3 +65,6 @@ Thumbs.db
 .uic/
 /build*/
 /.vs/LibrarySystemQt
+.vs/
+release/
+debug/
