@@ -65,3 +65,4 @@ Thumbs.db
 .uic/
 /build*/
 /.vs/LibrarySystemQt
+/debug/LibrarySystemQt.tlog/LibrarySystemQt.write.1u.tlog

@@ -14,39 +14,54 @@ bool SearchBook(book Book, bookList L, char method, bookList foundBook, int& i) 
 	}
 	while (p) {
 		switch (method) {  // 根据方法查找图书
-		case 'a':  // 按作者查找
-			if (strcmp(p->author, Book.author) == 0) {
-				book* newBook = new book(*p);  // 创建新图书
-				fb->next = newBook;  // 将找到的图书信息存入数组
-				fb = fb->next;  // 移动到下一个位置
-				i++;  // 增加已找到的图书数量
-			}
-			break;
-		case 'I':  // 按ISBN查找
-			if (p->ISBN == Book.ISBN) {
-				book* newBook = new book(*p);  // 创建新图书
-				fb->next = newBook;  // 将找到的图书信息存入数组
-				i++;  // 增加已找到的图书数量
-				return true;
-			}
-			break;
-		case 'n':  // 按书名查找
-			if (strcmp(p->name, Book.name) == 0) {
-				book* newBook = new book(*p);  // 创建新图书
-				fb->next = newBook;  // 将找到的图书信息存入数组
-				i++;  // 增加已找到的图书数量
-				return true;
-			}
-			break;
-		case 'y':  // 按出版年份查找
-			if (p->year == Book.year) {
-				book* newBook = new book(*p);  // 创建新图书
-				fb->next = newBook;  // 将找到的图书信息存入数组
-				fb = fb->next;  // 移动到下一个位置
-				i++;  // 增加已找到的图书数量
-			}
-			break;
-
+			case 'i':  // 按ID查找
+				if (p->id == Book.id) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = p;  // 将找到的图书信息存入数组
+					i++;  // 增加已找到的图书数量
+					return true;
+				}
+				break;
+			case 'a':  // 按作者查找
+				if (strcmp(p->author, Book.author) == 0) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = newBook;  // 将找到的图书信息存入数组
+					fb = fb->next;  // 移动到下一个位置
+					i++;  // 增加已找到的图书数量
+				}
+				break;
+			case 'I':  // 按ISBN查找
+				if (p->ISBN == Book.ISBN) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = newBook;  // 将找到的图书信息存入数组
+					i++;  // 增加已找到的图书数量
+					return true;
+				}
+				break;
+			case 'n':  // 按书名查找
+				if (strcmp(p->name, Book.name) == 0) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = newBook;  // 将找到的图书信息存入数组
+					i++;  // 增加已找到的图书数量
+					return true;
+				}
+				break;
+			case 'y':  // 按出版年份查找
+				if (p->year == Book.year) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = newBook;  // 将找到的图书信息存入数组
+					fb = fb->next;  // 移动到下一个位置
+					i++;  // 增加已找到的图书数量
+				}
+				break;
+			default:  // 默认按ID查找
+				if (p->id == Book.id) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = p;  // 将找到的图书信息存入数组
+					i++;  // 增加已找到的图书数量
+					return true;
+				}
+				break;
 		}
 		p = p->next;  // 移动到下一个图书
 	}
@@ -111,7 +126,7 @@ bool ModifyBook(book bookPre, book bookMod, bookList L) {  // 修改图书函数
 	return false;  // 修改失败，未找到图书
 }
 
-int BorrowBook(book Book, bookList L, int userId) {  // 借阅图书函数
+int BorrowBook(book Book, bookList L, int borrowTime) {  // 借阅图书函数
 	book* p = L->next;
 	if (L->next == NULL) {  // 如果链表为空
 		return -1;  // 返回-1表示未找到图书

@@ -11,7 +11,6 @@ typedef struct Book
     int year;
     int ISBN;
     bool isBorrowed; // 是否被借阅
-    int borrowedBy; // 借阅者的编号，-1表示未被借阅
     Book* next; // 指向下一本图书的指针
 } book, * bookList;
 
