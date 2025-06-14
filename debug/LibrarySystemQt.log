@@ -1,0 +1,1 @@
+﻿C:\Users\联想\OneDrive\桌面\C\LibrarySystemQt.vcxproj(60,5): error MSB4019: 找不到导入的项目“C:\Users\联想\OneDrive\桌面\C\QtMsBuild\Qt.props”。请确认 Import 声明“C:\Users\联想\OneDrive\桌面\C\QtMsBuild\Qt.props”中的表达式正确，且文件位于磁盘上。
