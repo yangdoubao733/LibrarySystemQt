@@ -79,7 +79,7 @@ bool DeleteBook(book Book, bookList L) {  // 删除图书函数
 	book *p = L->next;
 	book* prev = L;  // 前驱指针
 	while (p) {
-		if (p->name == Book.name || p->ISBN == Book.ISBN) {  // 找到要删除的图书
+		if (p->id == Book.id) {  // 找到要删除的图书
 			prev->next = p->next;  // 删除图书
 			delete p;  // 释放内存
 			return true;  // 删除成功
@@ -111,7 +111,7 @@ bool ModifyBook(book bookPre, book bookMod, bookList L) {  // 修改图书函数
 	return false;  // 修改失败，未找到图书
 }
 
-int BorrowBook(book Book, bookList L,int userId) {  // 借阅图书函数
+int BorrowBook(book Book, bookList L, char* userName) {  // 借阅图书函数
 	book* p = L->next;
 	if (L->next == NULL) {  // 如果链表为空
 		return -1;  // 返回-1表示未找到图书
@@ -119,7 +119,7 @@ int BorrowBook(book Book, bookList L,int userId) {  // 借阅图书函数
 	while (p) {
 		if (p->id == Book.id) {  // 找到要借阅的图书
 			p->isBorrowed = true;  // 标记为已借阅
-			p->borrowedBy = userId;  // 记录借阅者ID
+			p->borrowedBy = userName;  // 记录借阅者ID
 			return true;  // 修改成功
 		}
 		p = p->next;  // 移动到下一个图书

@@ -7,6 +7,8 @@
 #include "File.h"
 #include <iostream>
 
+QString login_UserName;
+
 login::login(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::login)
@@ -55,6 +57,7 @@ void login::on_loginButton_clicked()
         QString username(u->username);
         QString password(u->password);
         if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
+			login_UserName = current_username; //保存当前登录的用户名
             user* temp = ulist;
             while (ulist) { //清理链表内存
                 temp = ulist->next;

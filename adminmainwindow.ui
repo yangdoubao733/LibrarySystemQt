@@ -29,7 +29,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="mainPage">
     <widget class="QWidget" name="gridLayoutWidget_2">
@@ -449,9 +449,6 @@
         </property>
        </spacer>
       </item>
-      <item row="4" column="1" colspan="6">
-       <widget class="QListView" name="listView_4"/>
-      </item>
       <item row="1" column="0">
        <widget class="QPushButton" name="userManage_3">
         <property name="font">
@@ -501,7 +498,7 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QLineEdit" name="userName"/>
+       <widget class="QLineEdit" name="name"/>
       </item>
       <item row="0" column="2" colspan="4">
        <widget class="QLabel" name="label_6">
@@ -522,7 +519,7 @@
        <widget class="QLineEdit" name="password"/>
       </item>
       <item row="1" column="5">
-       <widget class="QLineEdit" name="account"/>
+       <widget class="QLineEdit" name="userName"/>
       </item>
       <item row="1" column="1">
        <widget class="QLabel" name="label_7">
@@ -649,6 +646,9 @@
         </item>
        </layout>
       </item>
+      <item row="4" column="1" colspan="6">
+       <widget class="QTableView" name="userTableView"/>
+      </item>
      </layout>
     </widget>
    </widget>
@@ -657,8 +657,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup"/>
+  <buttongroup name="buttonGroup_2"/>
   <buttongroup name="buttonGroup_3"/>
  </buttongroups>
 </ui>

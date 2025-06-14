@@ -35,7 +35,7 @@ AdminMainWindow::AdminMainWindow(QWidget *parent)
 		book = book->next;
     }
     ui->bookTableView->setModel(model);
-	DeleteLinkList(bl); //释放链表内存
+	DeleteBookLinkList(bl); //释放链表内存
 }
 
 AdminMainWindow::~AdminMainWindow()
@@ -179,8 +179,8 @@ void AdminMainWindow::on_searchBookButton_clicked()
         foundBook = foundBook->next;
     }
     ui->bookTableView->setModel(model);
-	DeleteLinkList(foundBook); //释放链表内存
-	DeleteLinkList(bl); //释放链表内存
+	DeleteBookLinkList(foundBook); //释放链表内存
+	DeleteBookLinkList(bl); //释放链表内存
 }
 
 //图书页面 添加图书
@@ -203,7 +203,7 @@ void AdminMainWindow::on_addBookButton_clicked()
         return;
     }
 	writeBookFile(BOOKPATH, bl); //写入文件
-	DeleteLinkList(bl); //释放链表内存
+	DeleteBookLinkList(bl); //释放链表内存
 }
 
 //图书页面 删除图书
@@ -233,7 +233,7 @@ void AdminMainWindow::on_deleteBookButton_clicked()
         return;
     }
     writeBookFile(BOOKPATH, bl); //写入文件
-    DeleteLinkList(bl); //释放链表内存
+    DeleteBookLinkList(bl); //释放链表内存
 }
 
 //用户页面跳转图书页面
@@ -252,18 +252,139 @@ void AdminMainWindow::on_exitButton_3_clicked()
 //用户页面 查找用户
 void AdminMainWindow::on_searchUserButton_clicked()
 {
+    //读取文件
+	userList ul = readUserFile(USERPATH);
+	QString current_userName = ui->userName->text();
+	QString current_name = ui->name->text();
+	QString current_password = ui->password->text();
 
+    //查找图书
+    userList foundUser;
+    User toSearchUser;
+    //初始化链表
+    foundUser = (userList)new User;
+    if (foundUser == NULL) {
+        return;
+    }
+    foundUser->next = NULL;
+    if (current_name.isEmpty() && current_password.isEmpty() && current_password.isEmpty()) {
+        foundUser = ul->next; //如果没有输入任何条件，则显示所有图书
+    }
+    else {
+
+		toSearchUser.name = current_name.toUtf8().data();
+		toSearchUser.username = current_userName.toUtf8().data();
+		toSearchUser.password = current_password.toUtf8().data();
+        //第一次搜索 - 按用户名、账号、密码依次搜索
+        if (!current_userName.isEmpty()) {
+            int i = 0;
+            SearchUser(toSearchUser, ul, 'u', foundUser, i);
+		}
+        if (!current_name.isEmpty() && !foundUser) {
+			int i = 0;
+            SearchUser(toSearchUser, ul, 'n', foundUser, i);
+		}
+        if (!current_password.isEmpty() && !foundUser) {
+            int i = 0;
+            SearchUser(toSearchUser, ul, 'p', foundUser, i);
+		}
+        // 二次搜索 - 在已找到的结果中继续筛选
+        
+        // 按姓名再次筛选
+        if (!current_name.isEmpty() && foundUser) {
+            int i = 0;
+            userList tempList = foundUser;
+            foundUser = (userList)new User;
+            if (foundUser == NULL) {
+                return;
+            }
+            foundUser->next = NULL;
+            SearchUser(toSearchUser, tempList, 'n', foundUser, i);
+        }
+0
+        // 按密码再次筛选
+        if (!current_password.isEmpty() && foundUser) {
+            int i = 0;
+            userList tempList = foundUser;
+            foundUser = (userList)new User;
+            if (foundUser == NULL) {
+                return;
+            }
+            foundUser->next = NULL;
+            SearchUser(toSearchUser, tempList, 'p', foundUser, i);
+        }
+
+        if (!foundUser) {
+            QMessageBox::information(this, "提示", "未找到相关用户！", QMessageBox::Ok);
+            return;
+        }
+    }
+
+    //设置标题
+    QStandardItemModel* model = new QStandardItemModel(0, 4, this);
+    model->setHorizontalHeaderLabels({ "id", "用户名", "账号" ,"密码"});//设置表头
+    QList<QStandardItem*> rowItems;
+    while (foundUser) {//遍历链表
+        rowItems.clear();
+		rowItems.append(new QStandardItem(QString::number(foundUser->id)));
+		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->username)));
+		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->name)));
+		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->password)));
+        model->appendRow(rowItems);
+        foundUser = foundUser->next;
+    }
+    ui->userTableView->setModel(model);
+    DeleteUserLinkList(foundUser); //释放链表内存
+    DeleteUserLinkList(ul); //释放链表内存
 }
 
 //用户页面 添加用户
 void AdminMainWindow::on_addUserButton_clicked()
 {
+    user addedUser;
+	addedUser.username = ui->userName->text().toUtf8().data();
+	addedUser.name = ui->name->text().toUtf8().data();
+	addedUser.password = ui->password->text().toUtf8().data();
 
+    userList ul;
+    ul = readUserFile(BOOKPATH);
+    if (ul == NULL) {
+        QMessageBox::warning(this, "错误", "无法读取用户文件！", QMessageBox::Ok);
+        return;
+    }
+    if (!AddUser(addedUser, ul)) {
+        QMessageBox::warning(this, "错误", "图书添加失败！", QMessageBox::Ok);
+        return;
+    }
+    writeUserFile(USERPATH, ul); //写入文件
+    DeleteUserLinkList(ul); //释放链表内存
 }
 
 //用户页面 删除用户
 void AdminMainWindow::on_deleteUserButton_clicked()
 {
+    QList<QModelIndex> list = ui->userTableView->selectionModel()->selectedIndexes();
+    if (!list.isEmpty()) {
+        QMessageBox::warning(this, "错误", "请先选择要删除的用户！", QMessageBox::Ok);
+        return;
+    }
 
+    user deletedUser;
+	deletedUser.id = list[0].data().toInt(); //获取选中用户的id
+	deletedUser.username = list[1].data().toString().toUtf8().data();
+	deletedUser.name = list[2].data().toString().toUtf8().data();
+	deletedUser.password = list[3].data().toString().toUtf8().data();
+    userList ul;
+    ul = readUserFile(USERPATH);
+    if (ul == NULL) {
+        QMessageBox::warning(this, "错误", "无法读取用户文件！", QMessageBox::Ok);
+        return;
+    }
+    if (!DeleteUser(deletedUser, ul)) {
+        QMessageBox::warning(this, "错误", "用户删除失败！", QMessageBox::Ok);
+        return;
+    }
+    writeUserFile(USERPATH, ul); //写入文件
+    DeleteUserLinkList(ul); //释放链表内存
 }
 
