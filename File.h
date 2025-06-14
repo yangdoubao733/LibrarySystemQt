@@ -7,12 +7,12 @@
 #include "User.h"
 
 bookList readBookFile(const char* fileName);//读取文件返回链表头指针
-void writeBookFile(const char* fileName, book* head);//将链表写入文件
+void writeBookFile(const char* fileName, bookList head);//将链表写入文件（存储时id从1开始递增）
 
-UserList readUserFile(const char* fileName);//读取文件返回链表头指针
-void writeUserFile(const char* fileName, book* head);//将链表写入文件
+userList readUserFile(const char* fileName);//读取文件返回链表头指针
+void writeUserFile(const char* fileName, userList head);//将链表写入文件（存储时id从1开始递增）
 
-AdminList readAdminFile(const char* fileName);//读取文件返回链表头指针
-void writeAdminFile(const char* fileName, book* head);//将链表写入文件
+adminList readAdminFile(const char* fileName);//读取文件返回链表头指针
+void writeAdminFile(const char* fileName, List adminhead);//将链表写入文件（存储时id从1开始递增）
 
 #endif // !BOOKFILE
