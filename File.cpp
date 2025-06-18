@@ -1,292 +1,312 @@
 #include "File.h"
-#include<stdio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// 辅助函数：去除字符串首尾的空白字符
+char* trim(char* str) {
+    char* end;
+    // 去除开头空白字符
+    while (*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')) {
+        str++;
+    }
+    if (*str == 0) {  // 全部是空白字符的情况
+        return str;
+    }
+    // 去除末尾空白字符
+    end = str + strlen(str) - 1;
+    while (end > str && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
+        end--;
+    }
+    *(end + 1) = 0;  // 在末尾添加字符串结束符
+    return str;
+}
 
 
-bookList readBookFile(const char* fileName) {//读取文件返回链表头指针
-    FILE* file = fopen(fileName, "r");
+// 读取图书文件，返回图书链表头指针
+bookList readBookFile(const char* fileName) {
+    FILE* file = fopen(fileName, "r");  // 以只读方式打开文件
     if (file == NULL) {
-        perror("Error opening file");
-        return NULL;
+        return NULL;  // 文件打开失败，返回空指针
     }
 
-    bookList head = NULL;
-    book* tail = NULL;
-    int idCounter = 1;
-    char line[512];  // 增大缓冲区以容纳完整行
+    // 创建头节点（哨兵节点）
+    bookList head = (bookList)malloc(sizeof(book));
+    if (head == NULL) {
+        fclose(file);
+        return NULL;
+    }
+    head->next = NULL;
+    bookList tail = head;  // 尾指针用于高效追加
 
-    while (fgets(line, sizeof(line), file) != NULL) {
-        // 移除行尾换行符
-        size_t len = strlen(line);
-        if (len > 0 && line[len - 1] == '\n') {
-            line[len - 1] = '\0';
-        }
+    char line[1024];  // 行缓冲区
 
-        // 忽略空行
-        if (line[0] == '\0') continue;
+    // 跳过CSV标题行（如果有）
+    fgets(line, sizeof(line), file);
 
-        // 分配新节点
-        book* newBook = (book*)malloc(sizeof(book));
-        if (!newBook) {
-            perror("Memory allocation failed");
+    // 逐行读取数据
+    while (fgets(line, sizeof(line), file)) {
+        // 创建新节点
+        bookList newNode = (bookList)malloc(sizeof(book));
+        if (newNode == NULL) {
             fclose(file);
-            return head;
+            return head;  // 返回已读取的部分链表
         }
 
-        // 初始化节点
-        newBook->id = idCounter++;
-        newBook->name = NULL;
-        newBook->author = NULL;
-        newBook->next = NULL;
+        // 初始化指针成员
+        newNode->name = NULL;
+        newNode->author = NULL;
+        newNode->publisher = NULL;
+        newNode->borrowedBy = NULL;
+        newNode->next = NULL;
 
-        // 使用strtok分割字符串
-        char* token = strtok(line, ",");
-        if (token == NULL) goto cleanup;  // 格式错误
+        char* token;
+        // 读取图书ID
+        token = strtok(line, ",");
+        if (token == NULL) continue;
+        newNode->id = atoi(trim(token));
 
-        // 书名
-        newBook->name = strdup(token);
-        if (!newBook->name) goto cleanup;
-
-        // 作者
+        // 读取图书名称（动态分配内存）
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newBook->author = strdup(token);
-        if (!newBook->author) goto cleanup;
+        if (token == NULL) continue;
+        newNode->name = strdup(trim(token));
 
-        // 出版年份
+        // 读取作者（动态分配内存）
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newBook->year = atoi(token);
+        if (token == NULL) continue;
+        newNode->author = strdup(trim(token));
 
-        // ISBN
+        // 读取出版社（动态分配内存）
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newBook->ISBN = atoi(token);
+        if (token == NULL) continue;
+        newNode->publisher = strdup(trim(token));
 
-        // 借阅状态
+        // 读取出版年份
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newBook->isBorrowed = (atoi(token) != 0);
+        if (token == NULL) continue;
+        newNode->year = atoi(trim(token));
 
-        // 借阅者ID
+        // 读取ISBN
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newBook->borrowedBy = atoi(token);
+        if (token == NULL) continue;
+        newNode->ISBN = atoi(trim(token));
 
-        // 添加到链表
-        if (head == NULL) {
-            head = newBook;
-            tail = newBook;
+        // 读取借阅状态
+        token = strtok(NULL, ",");
+        if (token == NULL) continue;
+        newNode->isBorrowed = (strcmp(trim(token), "true") == 0);
+
+        // 读取借阅者（动态分配内存）
+        token = strtok(NULL, ",");
+        if (token != NULL) {
+            newNode->borrowedBy = strdup(trim(token));
         }
         else {
-            tail->next = newBook;
-            tail = newBook;
+            newNode->borrowedBy = NULL;
         }
 
-        continue;  // 成功添加，继续下一行
-
-    cleanup:  // 错误处理
-        if (newBook->name) free(newBook->name);
-        if (newBook->author) free(newBook->author);
-        free(newBook);
-        idCounter--;  // 回滚ID计数器
+        // 将新节点添加到链表尾部
+        tail->next = newNode;
+        tail = newNode;
     }
 
     fclose(file);
-    return head;
+    return head;  // 返回带头节点的链表
 }
-void writeBookFile(const char* fileName, bookList head) {//将链表写入文件
-    FILE* file = fopen(fileName, "w");
-    if (file == NULL) {
-        perror("Error opening file for writing");
-        return;
+
+// 将图书链表写入文件
+void writeBookFile(const char* fileName, bookList head) {
+    FILE* file = fopen(fileName, "w");  // 以写入方式打开文件
+    if (file == NULL || head == NULL) {
+        return;  // 文件打开失败或链表为空，直接返回
     }
 
-    book* current = head;
+    // 写入CSV标题行
+    fprintf(file, "ID,Name,Author,Publisher,Year,ISBN,IsBorrowed,BorrowedBy\n");
+
+    // 遍历链表（跳过哨兵节点）
+    bookList current = head->next;
     while (current != NULL) {
-        // 写入图书信息，格式：书名,作者,出版年份,ISBN,借阅状态,借阅者ID
-        // 注意：不写入ID，因为ID在读取时会重新生成
-        fprintf(file, "%s,%s,%d,%d,%d,%d\n",
-            current->name,
-            current->author,
+        fprintf(file, "%d,%s,%s,%s,%d,%d,%s,%s\n",
+            current->id,
+            current->name ? current->name : "",
+            current->author ? current->author : "",
+            current->publisher ? current->publisher : "",
             current->year,
             current->ISBN,
-            current->isBorrowed ? 1 : 0,  // 将bool转换为整数
-            current->borrowedBy);
+            current->isBorrowed ? "true" : "false",
+            current->borrowedBy ? current->borrowedBy : "");
 
         current = current->next;
     }
 
     fclose(file);
-
 }
 
-userList readUserFile(const char* fileName) {//读取文件返回链表头指针
-    FILE* file = fopen(fileName, "r");
+// 读取用户文件，返回带头节点的用户链表
+userList readUserFile(const char* fileName) {
+    FILE* file = fopen(fileName, "r");  // 以只读方式打开文件
     if (file == NULL) {
-        perror("Error opening user file");
+        return NULL;  // 文件打开失败，返回NULL
+    }
+
+    // 创建头节点（哨兵节点）
+    userList head = (userList)malloc(sizeof(user));
+    if (head == NULL) {
+        fclose(file);
         return NULL;
     }
+    head->next = NULL;
+    userList tail = head;  // 尾指针用于高效追加
 
-    userList head = NULL;
-    user* tail = NULL;
-    int idCounter = 1;
-    char line[256];  // 缓冲区大小
+    char line[1024];  // 行缓冲区
 
-    while (fgets(line, sizeof(line), file) != NULL) {
-        // 移除行尾换行符
-        size_t len = strlen(line);
-        if (len > 0 && line[len - 1] == '\n') {
-            line[len - 1] = '\0';
-        }
+    // 跳过CSV标题行（如果有）
+    fgets(line, sizeof(line), file);
 
-        // 跳过空行
-        if (line[0] == '\0') continue;
-
-        // 分配新用户节点
-        user* newUser = (user*)malloc(sizeof(user));
-        if (!newUser) {
-            perror("Memory allocation failed");
+    // 逐行读取数据
+    while (fgets(line, sizeof(line), file)) {
+        // 创建新节点
+        userList newNode = (userList)malloc(sizeof(user));
+        if (newNode == NULL) {
             fclose(file);
-            return head;
+            return head;  // 返回已读取的部分链表
         }
 
-        // 初始化节点
-        newUser->id = idCounter++;
-        newUser->name = NULL;
-        newUser->username = NULL;
-        newUser->password = NULL;
-        newUser->next = NULL;
+        // 初始化指针成员
+        newNode->name = NULL;
+        newNode->username = NULL;
+        newNode->password = NULL;
+        newNode->next = NULL;
 
-        // 使用strtok分割字符串
-        char* token = strtok(line, ",");
-        if (token == NULL) goto cleanup;
+        char* token;
+        // 读取用户ID
+        token = strtok(line, ",");
+        if (token == NULL) continue;
+        newNode->id = atoi(trim(token));
 
-        // 姓名
-        newUser->name = strdup(token);
-        if (!newUser->name) goto cleanup;
-
-        // 用户名
+        // 读取用户姓名（动态分配内存）
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newUser->username = strdup(token);
-        if (!newUser->username) goto cleanup;
+        if (token == NULL) continue;
+        newNode->name = strdup(trim(token));
 
-        // 密码
+        // 读取用户名（动态分配内存）
         token = strtok(NULL, ",");
-        if (token == NULL) goto cleanup;
-        newUser->password = strdup(token);
-        if (!newUser->password) goto cleanup;
+        if (token == NULL) continue;
+        newNode->username = strdup(trim(token));
 
-        // 添加到链表
-        if (head == NULL) {
-            head = newUser;
-            tail = newUser;
-        }
-        else {
-            tail->next = newUser;
-            tail = newUser;
-        }
+        // 读取密码（动态分配内存）
+        token = strtok(NULL, ",");
+        if (token == NULL) continue;
+        newNode->password = strdup(trim(token));
 
-        continue;  // 成功添加，继续下一行
-
-    cleanup:  // 错误处理
-        if (newUser->name) free(newUser->name);
-        if (newUser->username) free(newUser->username);
-        if (newUser->password) free(newUser->password);
-        free(newUser);
-        idCounter--;  // 回滚ID计数器
+        // 将新节点添加到链表尾部
+        tail->next = newNode;
+        tail = newNode;
     }
 
     fclose(file);
-    return head;
-
+    return head;  // 返回带头节点的链表
 }
-void writeUserFile(const char* fileName, userList head) {//将链表写入文件
-    FILE* file = fopen(fileName, "w");
-    if (file == NULL) {
-        perror("Error opening user file for writing");
-        return;
+// 将用户链表写入文件
+void writeUserFile(const char* fileName, userList head) {
+    FILE* file = fopen(fileName, "w");  // 以写入方式打开文件
+    if (file == NULL || head == NULL) {
+        return;  // 文件打开失败或链表为空，直接返回
     }
 
-    user* current = head;
+    // 写入CSV标题行
+    fprintf(file, "ID,Name,Username,Password\n");
+
+    // 遍历链表（跳过哨兵节点）
+    userList current = head->next;
     while (current != NULL) {
-        // 写入用户信息，格式：姓名,用户名,密码
-        // 注意：不写入ID，因为ID在读取时会重新生成
-        fprintf(file, "%s,%s,%s\n",
-            current->name,
-            current->username,
-            current->password);
+        fprintf(file, "%d,%s,%s,%s\n",
+            current->id,
+            current->name ? current->name : "",
+            current->username ? current->username : "",
+            current->password ? current->password : "");
 
         current = current->next;
     }
 
+    fclose(file);
+}
 
-    adminList readAdminFile(const char* fileName) {
-        FILE* file = fopen(fileName, "r");
-        if (file == NULL) {
-            perror("Error opening admin file");
-            return NULL;
-        }
-
-        adminList head = NULL;
-        admin* tail = NULL;
-        char line[256];
-
-        while (fgets(line, sizeof(line), file) != NULL) {
-            // 移除行尾换行符
-            size_t len = strlen(line);
-            if (len > 0 && line[len - 1] == '\n') {
-                line[len - 1] = '\0';
-            }
-
-            // 跳过空行
-            if (line[0] == '\0') continue;
-
-            // 分配新管理员节点
-            admin* newAdmin = (admin*)malloc(sizeof(admin));
-            if (!newAdmin) {
-                perror("Memory allocation failed");
-                fclose(file);
-                return head;
-            }
-
-            // 初始化节点
-            newAdmin->username = NULL;
-            newAdmin->password = NULL;
-            newAdmin->next = NULL;
-
-            // 使用strtok分割字符串
-            char* token = strtok(line, ",");
-            if (token == NULL) goto cleanup;
-
-            // 用户名
-            newAdmin->username = strdup(token);
-            if (!newAdmin->username) goto cleanup;
-
-            // 密码
-            token = strtok(NULL, ",");
-            if (token == NULL) goto cleanup;
-            newAdmin->password = strdup(token);
-            if (!newAdmin->password) goto cleanup;
-
-            // 添加到链表
-            if (head == NULL) {
-                head = newAdmin;
-                tail = newAdmin;
-            }
-            else {
-                tail->next = newAdmin;
-                tail = newAdmin;
-            }
-
-            continue;  // 成功添加，继续下一行
-
-        cleanup:  // 错误处理
-            if (newAdmin->username) free(newAdmin->username);
-            if (newAdmin->password) free(newAdmin->password);
-            free(newAdmin);
-        }
-
-        fclose(file);
-        return head;
+// 读取管理员文件，返回带头节点的管理员链表
+adminList readAdminFile(const char* fileName) {
+    FILE* file = fopen(fileName, "r");  // 以只读方式打开文件
+    if (file == NULL) {
+        return NULL;  // 文件打开失败，返回NULL
     }
+
+    // 创建头节点（哨兵节点）
+    adminList head = (adminList)malloc(sizeof(admin));
+    if (head == NULL) {
+        fclose(file);
+        return NULL;
+    }
+    head->next = NULL;
+    adminList tail = head;  // 尾指针用于高效追加
+
+    char line[1024];  // 行缓冲区
+
+    // 跳过CSV标题行（如果有）
+    fgets(line, sizeof(line), file);
+
+    // 逐行读取数据
+    while (fgets(line, sizeof(line), file)) {
+        // 创建新节点
+        adminList newNode = (adminList)malloc(sizeof(admin));
+        if (newNode == NULL) {
+            fclose(file);
+            return head;  // 返回已读取的部分链表
+        }
+
+        // 初始化指针成员
+        newNode->username = NULL;
+        newNode->password = NULL;
+        newNode->next = NULL;
+
+        char* token;
+        // 读取管理员用户名（动态分配内存）
+        token = strtok(line, ",");
+        if (token == NULL) continue;
+        newNode->username = strdup(trim(token));
+
+        // 读取密码（动态分配内存）
+        token = strtok(NULL, ",");
+        if (token == NULL) continue;
+        newNode->password = strdup(trim(token));
+
+        // 将新节点添加到链表尾部
+        tail->next = newNode;
+        tail = newNode;
+    }
+
+    fclose(file);
+    return head;  // 返回带头节点的链表
+}
+
+// 将管理员链表写入文件
+void writeAdminFile(const char* fileName, adminList head) {
+    FILE* file = fopen(fileName, "w");  // 以写入方式打开文件
+    if (file == NULL || head == NULL) {
+        return;  // 文件打开失败或链表为空，直接返回
+    }
+
+    // 写入CSV标题行
+    fprintf(file, "Username,Password\n");
+
+    // 遍历链表（跳过哨兵节点）
+    adminList current = head->next;
+    while (current != NULL) {
+        fprintf(file, "%s,%s\n",
+            current->username ? current->username : "",
+            current->password ? current->password : "");
+
+        current = current->next;
+    }
+
+    fclose(file);
+}

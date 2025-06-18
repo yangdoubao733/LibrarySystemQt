@@ -7,7 +7,7 @@
 #include "File.h"
 #include <iostream>
 
-QString login_UserName;
+
 
 login::login(QWidget *parent)
     : QWidget(parent)

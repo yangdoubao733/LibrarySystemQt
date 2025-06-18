@@ -2,7 +2,7 @@
 #define LOGIN_H
 
 #include <QWidget>
-
+QString login_UserName;
 namespace Ui {
 class login;
 }

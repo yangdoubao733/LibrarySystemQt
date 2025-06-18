@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <string.h>
+#include <login.h>
 
 
 
@@ -178,7 +179,7 @@ void UserMainWindow::on_borrowBookButton_clicked()
     }
 
     // 使用全局变量 login_UserName 作为借阅者
-    if (BorrowBook(*actualBook, bl, login_UserName)) {
+    if (BorrowBook(*actualBook, bl, login_UserName.toUtf8().data())) {
         // 更新文件
         writeBookFile(BOOKPATH, bl);
         QMessageBox::information(this, "提示", "借阅成功！");
@@ -230,7 +231,7 @@ void UserMainWindow::on_searchButton_clicked()
             (QString::fromUtf8(p->author).contains(current_author));
 
         // 只显示当前用户借阅的图书
-        if (p->isBorrowed && strcmp(p->borrowedBy, login_UserName) == 0 &&
+        if (p->isBorrowed && strcmp(p->borrowedBy, login_UserName.toUtf8().data()) == 0 &&
             (nameMatch || authorMatch)) {
             current->next = new book(*p);
             current = current->next;
@@ -288,7 +289,7 @@ void UserMainWindow::on_returnButton_clicked()
     // 查找并归还图书
     book* p = bl->next;
     while (p) {
-        if (p->id == bookId && p->isBorrowed && strcmp(p->borrowedBy, login_UserName) == 0) {
+        if (p->id == bookId && p->isBorrowed && strcmp(p->borrowedBy, login_UserName.toUtf8().data()) == 0) {
             // 归还图书
             p->isBorrowed = false;
             strcpy(p->borrowedBy ,nullptr);// 设置为未借阅状态

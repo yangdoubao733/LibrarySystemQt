@@ -13,6 +13,6 @@ userList readUserFile(const char* fileName);//读取文件返回链表头指针
 void writeUserFile(const char* fileName, userList head);//将链表写入文件（存储时id从1开始递增）
 
 adminList readAdminFile(const char* fileName);//读取文件返回链表头指针
-void writeAdminFile(const char* fileName, List adminhead);//将链表写入文件（存储时id从1开始递增）
+void writeAdminFile(const char* fileName, adminList head);//将链表写入文件（存储时id从1开始递增）
 
 #endif // !BOOKFILE
