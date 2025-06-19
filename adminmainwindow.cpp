@@ -301,7 +301,7 @@ void AdminMainWindow::on_searchUserButton_clicked()
             foundUser->next = NULL;
             SearchUser(toSearchUser, tempList, 'n', foundUser, i);
         }
-0
+
         // 按密码再次筛选
         if (!current_password.isEmpty() && foundUser) {
             int i = 0;

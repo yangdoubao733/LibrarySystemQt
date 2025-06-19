@@ -1,10 +1,10 @@
 #ifndef USER
 #define USER
 
-typedef struct admin {
+typedef struct Admin {
 	char* username;
 	char* password;
-	admin* next;
+	Admin* next;
 }admin,*adminList;
 
 typedef struct User {
@@ -12,7 +12,7 @@ typedef struct User {
 	char* name;
 	char* username;
 	char* password;
-	user* next;
+	User* next;
 }user,*userList;
 
 // 查找用户函数，method为查找方式，foundBook为存放查找结果的数组，i为当前查找结果的数量
