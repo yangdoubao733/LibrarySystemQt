@@ -234,3 +234,58 @@ void writeUserFile(const char* fileName, userList head) {
 
     fclose(file);
 }
+
+// 读取管理员文件，返回带头节点的管理员链表
+adminList readAdminFile(const char* fileName) {
+    FILE* file = fopen(fileName, "r");  // 以只读方式打开文件
+    if (file == NULL) {
+        return NULL;  // 文件打开失败，返回NULL
+    }
+
+    // 创建头节点（哨兵节点）
+    adminList head = (adminList)malloc(sizeof(admin));
+    if (head == NULL) {
+        fclose(file);
+        return NULL;
+    }
+    head->next = NULL;
+    adminList tail = head;  // 尾指针用于高效追加
+
+    char line[1024];  // 行缓冲区
+
+    // 跳过CSV标题行（如果有）
+    fgets(line, sizeof(line), file);
+
+    // 逐行读取数据
+    while (fgets(line, sizeof(line), file)) {
+        // 创建新节点
+        adminList newNode = (adminList)malloc(sizeof(admin));
+        if (newNode == NULL) {
+            fclose(file);
+            return head;  // 返回已读取的部分链表
+        }
+
+        // 初始化指针成员
+        newNode->username = NULL;
+        newNode->password = NULL;
+        newNode->next = NULL;
+
+        char* token;
+        // 读取管理员用户名（动态分配内存）
+        token = strtok(line, ",");
+        if (token == NULL) continue;
+        newNode->username = strdup(trim(token));
+
+        // 读取密码（动态分配内存）
+        token = strtok(NULL, ",");
+        if (token == NULL) continue;
+        newNode->password = strdup(trim(token));
+
+        // 将新节点添加到链表尾部
+        tail->next = newNode;
+        tail = newNode;
+    }
+
+    fclose(file);
+    return head;  // 返回带头节点的链表
+}
