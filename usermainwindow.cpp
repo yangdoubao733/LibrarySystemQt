@@ -163,6 +163,7 @@ void UserMainWindow::on_borrowBookButton_clicked()
     book tempBook{};
     tempBook.id = bookId;
     bookList foundBook = new book(); // 创建头节点
+    foundBook->next = nullptr;
     int i = 0;
     if (!SearchBook(tempBook, bl, 'i', foundBook, i)) {
         QMessageBox::warning(this, "警告", "未找到该图书！");
@@ -221,6 +222,7 @@ void UserMainWindow::on_searchButton_clicked()
 
     // 查找图书
     bookList foundBook = new book(); // 创建头节点
+    foundBook->next = nullptr;
     book* current = foundBook;
 
     book* p = bl->next;
@@ -289,10 +291,12 @@ void UserMainWindow::on_returnButton_clicked()
     // 查找并归还图书
     book* p = bl->next;
     while (p) {
-        if (p->id == bookId && p->isBorrowed && strcmp(p->borrowedBy, login_UserName.toUtf8().data()) == 0) {
+        if (p->id == bookId && p->isBorrowed && p->borrowedBy &&
+            QString::fromUtf8(p->borrowedBy) == login_UserName) {
             // 归还图书
             p->isBorrowed = false;
-            strcpy(p->borrowedBy ,nullptr);// 设置为未借阅状态
+            delete[] p->borrowedBy; // 释放原内存
+            p->borrowedBy = nullptr; // 设置为未借阅状态
 
             // 更新文件
             writeBookFile(BOOKPATH, bl);

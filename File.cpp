@@ -29,7 +29,7 @@ bookList readBookFile(const char* fileName) {
     FILE* file = fopen(fileName, "r");  // 以只读方式打开文件
 
     // 创建头节点（哨兵节点）
-    bookList head = (bookList)malloc(sizeof(book));
+    bookList head = new book;
     if (head == NULL) {
         if (file != NULL) fclose(file);
         return NULL;
@@ -50,7 +50,7 @@ bookList readBookFile(const char* fileName) {
     // 逐行读取数据
     while (fgets(line, sizeof(line), file)) {
         // 创建新节点
-        bookList newNode = (bookList)malloc(sizeof(book));
+        bookList newNode = new book;
         if (newNode == NULL) {
             fclose(file);
             return head;  // 返回已读取的部分链表
@@ -153,7 +153,7 @@ userList readUserFile(const char* fileName) {
 
 
     // 创建头节点（哨兵节点）
-    userList head = (userList)malloc(sizeof(user));
+    userList head = new user;
     if (head == NULL) {
         fclose(file);
         return NULL;
@@ -172,7 +172,7 @@ userList readUserFile(const char* fileName) {
     // 逐行读取数据
     while (fgets(line, sizeof(line), file)) {
         // 创建新节点
-        userList newNode = (userList)malloc(sizeof(user));
+        userList newNode = new user;
         if (newNode == NULL) {
             fclose(file);
             return head;  // 返回已读取的部分链表
@@ -245,7 +245,7 @@ adminList readAdminFile(const char* fileName) {
 
 
     // 创建头节点（哨兵节点）
-    adminList head = (adminList)malloc(sizeof(admin));
+    adminList head = new admin;
     if (head == NULL) {
         fclose(file);
         return NULL;
@@ -263,7 +263,7 @@ adminList readAdminFile(const char* fileName) {
     // 逐行读取数据
     while (fgets(line, sizeof(line), file)) {
         // 创建新节点
-        adminList newNode = (adminList)malloc(sizeof(admin));
+        adminList newNode = new admin;
         if (newNode == NULL) {
             fclose(file);
             return head;  // 返回已读取的部分链表
