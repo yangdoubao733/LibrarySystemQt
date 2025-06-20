@@ -1,6 +1,8 @@
 #ifndef USER
 #define USER
 
+#include "Book.h"
+
 typedef struct Admin {
 	char* username;
 	char* password;

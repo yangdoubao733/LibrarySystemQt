@@ -1,4 +1,4 @@
-#include "Linklist.h"
+﻿#include "Linklist.h"
 #include"Book.h"
 #include"User.h"
 
@@ -17,17 +17,15 @@ void DeleteBookLinkList(bookList& L) { // Delete the link list
 		p = p->next; // Move to the next node
 		delete temp; // Delete the current node
 	}
-	delete L; // Finally, delete the head node
 	L = NULL; // Set the head pointer to NULL
 }
 void DeleteUserLinkList(userList& L) { // Delete the link list
 	if (L == NULL) return; // If the list is empty, do nothing
-	userList p = L->next; // Start from the first node
+	userList p = L; // Start from the first node
 	while (p != NULL) {
 		userList temp = p; // Store the current node
 		p = p->next; // Move to the next node
 		delete temp; // Delete the current node
 	}
-	delete L; // Finally, delete the head node
 	L = NULL; // Set the head pointer to NULL
 }

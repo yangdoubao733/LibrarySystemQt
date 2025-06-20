@@ -1,4 +1,4 @@
-#include "login.h"
+ï»¿#include "login.h"
 #include "ui_login.h"
 #include "adminmainwindow.h"
 #include "usermainwindow.h"
@@ -7,14 +7,14 @@
 #include "File.h"
 #include <iostream>
 
-
+QString login_UserName;
 
 login::login(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::login)
 {
     ui->setupUi(this);
-    setWindowTitle("Í¼Êé¹Ý¹ÜÀíÏµÍ³");
+    setWindowTitle("å›¾ä¹¦é¦†ç®¡ç†ç³»ç»Ÿ");
 }
 
 login::~login()
@@ -28,48 +28,54 @@ void login::on_loginButton_clicked()
     int flag = 0;
     QString current_username = ui->userName->text();
     QString current_password = ui->password->text();
-    //ÅÐ¶ÏÊÇ·ñÊÇ¹ÜÀíÔ±
+    //åˆ¤æ–­æ˜¯å¦æ˜¯ç®¡ç†å‘˜
     adminList alist;
     alist = readAdminFile(ADMINPATH);
-    admin* a = alist->next;
-    while (a && flag == 0) {
-        QString username(a->username);
-        QString password(a->password);
-        if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
-            admin* temp = alist;
-            while (alist) { //ÇåÀíÁ´±íÄÚ´æ
-                temp = alist->next;
-                delete alist;
-                alist = temp;
+    if (alist) {
+        admin* a = alist->next;
+        while (a && flag == 0) {
+            QString username(a->username);
+            QString password(a->password);
+            if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
+                admin* temp = alist;
+                while (alist) { //æ¸…ç†é“¾è¡¨å†…å­˜
+                    temp = alist->next;
+                    delete alist;
+                    alist = temp;
+                }
+                flag = 1;
+                AdminMainWindow* amw = new AdminMainWindow();
+                amw->show();
+                this->close();
+                
             }
-            flag = 1;
-            AdminMainWindow amw;
-            this->close();
-            amw.show();
+            a = a->next;
         }
-        a = a->next;
     }
-    //ÅÐ¶ÏÊÇ·ñÎªÆÕÍ¨ÓÃ»§
+    //åˆ¤æ–­æ˜¯å¦ä¸ºæ™®é€šç”¨æˆ·
     userList ulist;
     ulist = readUserFile(USERPATH);
-    user* u = ulist->next;
-    while (u && flag == 0) {
-        QString username(u->username);
-        QString password(u->password);
-        if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
-			login_UserName = current_username; //±£´æµ±Ç°µÇÂ¼µÄÓÃ»§Ãû
-            user* temp = ulist;
-            while (ulist) { //ÇåÀíÁ´±íÄÚ´æ
-                temp = ulist->next;
-                delete ulist;
-                ulist = temp;
+    if (ulist) {
+        user* u = ulist->next;
+        while (u && flag == 0) {
+            QString username(u->username);
+            QString password(u->password);
+            if (QString::compare(current_username, username) == 0 && QString::compare(current_password, password) == 0) {
+                login_UserName = current_username; //ä¿å­˜å½“å‰ç™»å½•çš„ç”¨æˆ·å
+                user* temp = ulist;
+                while (ulist) { //æ¸…ç†é“¾è¡¨å†…å­˜
+                    temp = ulist->next;
+                    delete ulist;
+                    ulist = temp;
+                }
+                flag = 1;
+                UserMainWindow* umw = new UserMainWindow();
+                umw->show();
+                this->close();
+                
             }
-            flag = 1;
-            UserMainWindow umw;
-            this->close();
-            umw.show();
+            u = u->next;
         }
-        u = u->next;
     }
 }
 

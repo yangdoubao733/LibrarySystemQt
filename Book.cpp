@@ -1,128 +1,134 @@
-#include"Book.h"
+ï»¿#include"Book.h"
 #include<string.h>
-bool SearchBook(book Book, bookList L, char method, bookList foundBook, int &i) {// ËÑË÷Í¼Êéº¯Êý,·µ»ØÕÒµ½µÄÍ¼ÊéÐÅÏ¢£¬²éÕÒ²»µ½·µ»Øfalse
+bool SearchBook(book Book, bookList L, char method, bookList foundBook, int &i) {// æœç´¢å›¾ä¹¦å‡½æ•°,è¿”å›žæ‰¾åˆ°çš„å›¾ä¹¦ä¿¡æ¯ï¼ŒæŸ¥æ‰¾ä¸åˆ°è¿”å›žfalse
 	book* p = L->next;
-	book* fb = foundBook;  // ÓÃÓÚ´æ´¢ÕÒµ½µÄÍ¼Êé
-	if (L->next == NULL) {  // Èç¹ûÁ´±íÎª¿Õ
-		return false;  // ·µ»Øfalse±íÊ¾Î´ÕÒµ½Í¼Êé
+	book* fb = foundBook;  // ç”¨äºŽå­˜å‚¨æ‰¾åˆ°çš„å›¾ä¹¦
+	if (L->next == NULL) {  // å¦‚æžœé“¾è¡¨ä¸ºç©º
+		return false;  // è¿”å›žfalseè¡¨ç¤ºæœªæ‰¾åˆ°å›¾ä¹¦
 	}
-	if(i >= MAXSIZE) {  // Èç¹ûÒÑÕÒµ½µÄÍ¼ÊéÊýÁ¿³¬¹ý×î´óÏÞÖÆ
-		return true;  // ·µ»Øtrue±íÊ¾²éÕÒ½áÊø
+	if(i >= MAXSIZE) {  // å¦‚æžœå·²æ‰¾åˆ°çš„å›¾ä¹¦æ•°é‡è¶…è¿‡æœ€å¤§é™åˆ¶
+		return true;  // è¿”å›žtrueè¡¨ç¤ºæŸ¥æ‰¾ç»“æŸ
 	}
-	while (fb->next) {//ÕÒµ½×îºóÒ»¸öÎ»ÖÃ
-		fb = fb->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÎ»ÖÃ
+	while (fb->next) {//æ‰¾åˆ°æœ€åŽä¸€ä¸ªä½ç½®
+		fb = fb->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªä½ç½®
 	}
 	while (p) {
-		switch (method) {  // ¸ù¾Ý·½·¨²éÕÒÍ¼Êé
-			case 'a':  // °´×÷Õß²éÕÒ
+		switch (method) {  // æ ¹æ®æ–¹æ³•æŸ¥æ‰¾å›¾ä¹¦
+			case 'a':  // æŒ‰ä½œè€…æŸ¥æ‰¾
 				if (strcmp(p->author, Book.author) == 0) {
-					book* newBook = new book(*p);  // ´´½¨ÐÂÍ¼Êé
-					fb->next = newBook;  // ½«ÕÒµ½µÄÍ¼ÊéÐÅÏ¢´æÈëÊý×é
-					fb = fb->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÎ»ÖÃ
-					i++;  // Ôö¼ÓÒÑÕÒµ½µÄÍ¼ÊéÊýÁ¿
+					book* newBook = new book(*p);  // åˆ›å»ºæ–°å›¾ä¹¦
+					fb->next = newBook;  // å°†æ‰¾åˆ°çš„å›¾ä¹¦ä¿¡æ¯å­˜å…¥æ•°ç»„
+					fb = fb->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªä½ç½®
+					i++;  // å¢žåŠ å·²æ‰¾åˆ°çš„å›¾ä¹¦æ•°é‡
 				}
 				break;
-			case 'I':  // °´ISBN²éÕÒ
+			case 'I':  // æŒ‰ISBNæŸ¥æ‰¾
 				if (p->ISBN == Book.ISBN) {
-					book* newBook = new book(*p);  // ´´½¨ÐÂÍ¼Êé
-					fb->next = newBook;  // ½«ÕÒµ½µÄÍ¼ÊéÐÅÏ¢´æÈëÊý×é
-					i++;  // Ôö¼ÓÒÑÕÒµ½µÄÍ¼ÊéÊýÁ¿
+					book* newBook = new book(*p);  // åˆ›å»ºæ–°å›¾ä¹¦
+					fb->next = newBook;  // å°†æ‰¾åˆ°çš„å›¾ä¹¦ä¿¡æ¯å­˜å…¥æ•°ç»„
+					i++;  // å¢žåŠ å·²æ‰¾åˆ°çš„å›¾ä¹¦æ•°é‡
 					return true;
 				}
 				break;
-			case 'n':  // °´ÊéÃû²éÕÒ
+			case 'n':  // æŒ‰ä¹¦åæŸ¥æ‰¾
 				if (strcmp(p->name, Book.name) == 0) {
-					book* newBook = new book(*p);  // ´´½¨ÐÂÍ¼Êé
-					fb->next = newBook;  // ½«ÕÒµ½µÄÍ¼ÊéÐÅÏ¢´æÈëÊý×é
-					i++;  // Ôö¼ÓÒÑÕÒµ½µÄÍ¼ÊéÊýÁ¿
+					book* newBook = new book(*p);  // åˆ›å»ºæ–°å›¾ä¹¦
+					fb->next = newBook;  // å°†æ‰¾åˆ°çš„å›¾ä¹¦ä¿¡æ¯å­˜å…¥æ•°ç»„
+					i++;  // å¢žåŠ å·²æ‰¾åˆ°çš„å›¾ä¹¦æ•°é‡
 					return true;
 				}
 				break;
-			case 'y':  // °´³ö°æÄê·Ý²éÕÒ
+			case 'y':  // æŒ‰å‡ºç‰ˆå¹´ä»½æŸ¥æ‰¾
 				if (p->year == Book.year) {
-					book* newBook = new book(*p);  // ´´½¨ÐÂÍ¼Êé
-					fb->next = newBook;  // ½«ÕÒµ½µÄÍ¼ÊéÐÅÏ¢´æÈëÊý×é
-					fb = fb->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÎ»ÖÃ
-					i++;  // Ôö¼ÓÒÑÕÒµ½µÄÍ¼ÊéÊýÁ¿
+					book* newBook = new book(*p);  // åˆ›å»ºæ–°å›¾ä¹¦
+					fb->next = newBook;  // å°†æ‰¾åˆ°çš„å›¾ä¹¦ä¿¡æ¯å­˜å…¥æ•°ç»„
+					fb = fb->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªä½ç½®
+					i++;  // å¢žåŠ å·²æ‰¾åˆ°çš„å›¾ä¹¦æ•°é‡
 				}
 				break;
 			
 		}
-		p = p->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÍ¼Êé
+		p = p->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå›¾ä¹¦
 	}
-	if (i > 0) {  // Èç¹ûÕÒµ½Í¼Êé
-		return true;  // ·µ»Øtrue±íÊ¾²éÕÒ³É¹¦
+	if (i > 0) {  // å¦‚æžœæ‰¾åˆ°å›¾ä¹¦
+		return true;  // è¿”å›žtrueè¡¨ç¤ºæŸ¥æ‰¾æˆåŠŸ
 	}
 	return false;  
 } 
 
-bool AddBook(book Book, bookList &L) {  // Ìí¼ÓÍ¼Êéº¯Êý
-	if (L->next == NULL) {  // Èç¹ûÁ´±íÎª¿Õ
-		return false;  // ·µ»Ø-1±íÊ¾Î´ÕÒµ½Í¼Êé
-	}
-	book founded[100];  // ÓÃÓÚ´æ´¢ÕÒµ½µÄÍ¼Êé
-	char temp = 'n';  // Ä¬ÈÏ°´ÊéÃû²éÕÒ
+bool AddBook(book Book, bookList &L) {  // æ·»åŠ å›¾ä¹¦å‡½æ•°
+	bookList founded = new book;  // ç”¨äºŽå­˜å‚¨æ‰¾åˆ°çš„å›¾ä¹¦
+	founded->next = NULL;  // åˆå§‹åŒ–é“¾è¡¨
+	char temp = 'n';  // é»˜è®¤æŒ‰ä¹¦åæŸ¥æ‰¾
 	int i = 0;
-	if (SearchBook(Book, L, temp, founded,i)) {  // Èç¹ûÍ¼ÊéÒÑ´æÔÚ
-		return false;  // Ìí¼ÓÊ§°Ü
+	
+	if (SearchBook(Book, L, temp, founded,i)) {  // å¦‚æžœå›¾ä¹¦å·²å­˜åœ¨
+		return false;  // æ·»åŠ å¤±è´¥
 	}
-	book* newBook = new book(Book);  // ´´½¨ÐÂÍ¼Êé
-	newBook->next = L->next;  // ½«ÐÂÍ¼Êé²åÈëµ½Á´±íÍ·²¿
-	L->next = newBook;  // ¸üÐÂÁ´±íÍ·Ö¸Õë
-	return true;  // Ìí¼Ó³É¹¦
+	book* newBook = new book;
+	newBook->name = strdup(Book.name);
+	newBook->author = strdup(Book.author);
+	newBook->publisher = Book.publisher ? strdup(Book.publisher) : nullptr;
+	newBook->year = Book.year;
+	newBook->ISBN = Book.ISBN;
+	newBook->isBorrowed = false;
+	newBook->borrowedBy = nullptr;
+	newBook->next = L->next;
+	L->next = newBook;
+	return true;
 }
 
-bool DeleteBook(book Book, bookList L) {  // É¾³ýÍ¼Êéº¯Êý
-	if (L->next == NULL) {  // Èç¹ûÁ´±íÎª¿Õ
-		return false;  // ·µ»Ø-1±íÊ¾Î´ÕÒµ½Í¼Êé
+bool DeleteBook(book Book, bookList L) {  // åˆ é™¤å›¾ä¹¦å‡½æ•°
+	if (L->next == NULL) {  // å¦‚æžœé“¾è¡¨ä¸ºç©º
+		return false;  // è¿”å›ž-1è¡¨ç¤ºæœªæ‰¾åˆ°å›¾ä¹¦
 	}
 	book *p = L->next;
-	book* prev = L;  // Ç°ÇýÖ¸Õë
+	book* prev = L;  // å‰é©±æŒ‡é’ˆ
 	while (p) {
-		if (p->id == Book.id) {  // ÕÒµ½ÒªÉ¾³ýµÄÍ¼Êé
-			prev->next = p->next;  // É¾³ýÍ¼Êé
-			delete p;  // ÊÍ·ÅÄÚ´æ
-			return true;  // É¾³ý³É¹¦
+		if (p->id == Book.id) {  // æ‰¾åˆ°è¦åˆ é™¤çš„å›¾ä¹¦
+			prev->next = p->next;  // åˆ é™¤å›¾ä¹¦
+			delete p;  // é‡Šæ”¾å†…å­˜
+			return true;  // åˆ é™¤æˆåŠŸ
 		}
-		prev = p;  // ¸üÐÂÇ°ÇýÖ¸Õë
-		p = p->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÍ¼Êé
+		prev = p;  // æ›´æ–°å‰é©±æŒ‡é’ˆ
+		p = p->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå›¾ä¹¦
 	}
-	return false;  // É¾³ýÊ§°Ü£¬Î´ÕÒµ½Í¼Êé
+	return false;  // åˆ é™¤å¤±è´¥ï¼Œæœªæ‰¾åˆ°å›¾ä¹¦
 }
 
-bool ModifyBook(book bookPre, book bookMod, bookList L) {  // ÐÞ¸ÄÍ¼Êéº¯Êý
+bool ModifyBook(book bookPre, book bookMod, bookList L) {  // ä¿®æ”¹å›¾ä¹¦å‡½æ•°
 	book* p = L->next;
-	if (L->next == NULL) {  // Èç¹ûÁ´±íÎª¿Õ
-		return false;  // ·µ»Ø-1±íÊ¾Î´ÕÒµ½Í¼Êé
+	if (L->next == NULL) {  // å¦‚æžœé“¾è¡¨ä¸ºç©º
+		return false;  // è¿”å›ž-1è¡¨ç¤ºæœªæ‰¾åˆ°å›¾ä¹¦
 	}
 	while (p) {
-		if (p->id == bookPre.id) {  // ÕÒµ½ÒªÐÞ¸ÄµÄÍ¼Êé
-			// ÐÞ¸ÄÍ¼ÊéÐÅÏ¢
+		if (p->id == bookPre.id) {  // æ‰¾åˆ°è¦ä¿®æ”¹çš„å›¾ä¹¦
+			// ä¿®æ”¹å›¾ä¹¦ä¿¡æ¯
 			p->ISBN = bookMod.ISBN;
 			strcpy(p->name, bookMod.name);
 			strcpy(p->author, bookMod.author);
 			strcpy(p->publisher, bookMod.publisher);
 			p->year = bookMod.year;
 			p->isBorrowed = bookMod.isBorrowed;
-			return true;  // ÐÞ¸Ä³É¹¦
+			return true;  // ä¿®æ”¹æˆåŠŸ
 		}
-		p = p->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÍ¼Êé
+		p = p->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå›¾ä¹¦
 	}
-	return false;  // ÐÞ¸ÄÊ§°Ü£¬Î´ÕÒµ½Í¼Êé
+	return false;  // ä¿®æ”¹å¤±è´¥ï¼Œæœªæ‰¾åˆ°å›¾ä¹¦
 }
 
-int BorrowBook(book Book, bookList L, char* userName) {  // ½èÔÄÍ¼Êéº¯Êý
+int BorrowBook(book Book, bookList L, char* userName) {  // å€Ÿé˜…å›¾ä¹¦å‡½æ•°
 	book* p = L->next;
-	if (L->next == NULL) {  // Èç¹ûÁ´±íÎª¿Õ
-		return -1;  // ·µ»Ø-1±íÊ¾Î´ÕÒµ½Í¼Êé
+	if (L->next == NULL) {  // å¦‚æžœé“¾è¡¨ä¸ºç©º
+		return -1;  // è¿”å›ž-1è¡¨ç¤ºæœªæ‰¾åˆ°å›¾ä¹¦
 	}
 	while (p) {
-		if (p->id == Book.id) {  // ÕÒµ½Òª½èÔÄµÄÍ¼Êé
-			p->isBorrowed = true;  // ±ê¼ÇÎªÒÑ½èÔÄ
-			p->borrowedBy = userName;  // ¼ÇÂ¼½èÔÄÕßID
-			return true;  // ÐÞ¸Ä³É¹¦
+		if (p->id == Book.id) {  // æ‰¾åˆ°è¦å€Ÿé˜…çš„å›¾ä¹¦
+			p->isBorrowed = true;  // æ ‡è®°ä¸ºå·²å€Ÿé˜…
+			p->borrowedBy = userName;  // è®°å½•å€Ÿé˜…è€…ID
+			return true;  // ä¿®æ”¹æˆåŠŸ
 		}
-		p = p->next;  // ÒÆ¶¯µ½ÏÂÒ»¸öÍ¼Êé
+		p = p->next;  // ç§»åŠ¨åˆ°ä¸‹ä¸€ä¸ªå›¾ä¹¦
 	}
-	return false;  // ½èÔÄÊ§°Ü£¬Î´ÕÒµ½Í¼Êé
+	return false;  // å€Ÿé˜…å¤±è´¥ï¼Œæœªæ‰¾åˆ°å›¾ä¹¦
 }

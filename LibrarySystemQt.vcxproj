@@ -14,7 +14,7 @@
     <ProjectGuid>{1C24A630-5EF6-31A2-8608-025F05A83A27}</ProjectGuid>
     <RootNamespace>LibrarySystemQt</RootNamespace>
     <Keyword>QtVS_v304</Keyword>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.26100.0</WindowsTargetPlatformMinVersion>
     <QtMsBuild Condition="'$(QtMsBuild)'=='' OR !Exists('$(QtMsBuild)\qt.targets')">$(MSBuildProjectDirectory)\QtMsBuild</QtMsBuild>
   </PropertyGroup>
@@ -191,6 +191,7 @@
     <ClCompile Include="Book.cpp" />
     <ClCompile Include="editbook.cpp" />
     <ClCompile Include="File.cpp" />
+    <ClCompile Include="Linklist.cpp" />
     <ClCompile Include="login.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="User.cpp" />
@@ -227,6 +228,7 @@
   <ItemGroup>
     <ClInclude Include="Book.h" />
     <ClInclude Include="File.h" />
+    <ClInclude Include="Linklist.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

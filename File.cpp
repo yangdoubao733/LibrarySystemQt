@@ -1,59 +1,62 @@
-#include "File.h"
+ï»¿#include "File.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <fstream>
 
-// ¸¨Öúº¯Êý£ºÈ¥³ý×Ö·û´®Ê×Î²µÄ¿Õ°××Ö·û
+// è¾…åŠ©å‡½æ•°ï¼šåŽ»é™¤å­—ç¬¦ä¸²é¦–å°¾çš„ç©ºç™½å­—ç¬¦
 char* trim(char* str) {
     char* end;
-    // È¥³ý¿ªÍ·¿Õ°××Ö·û
+    // åŽ»é™¤å¼€å¤´ç©ºç™½å­—ç¬¦
     while (*str && (*str == ' ' || *str == '\t' || *str == '\n' || *str == '\r')) {
         str++;
     }
-    if (*str == 0) {  // È«²¿ÊÇ¿Õ°××Ö·ûµÄÇé¿ö
+    if (*str == 0) {  // å…¨éƒ¨æ˜¯ç©ºç™½å­—ç¬¦çš„æƒ…å†µ
         return str;
     }
-    // È¥³ýÄ©Î²¿Õ°××Ö·û
+    // åŽ»é™¤æœ«å°¾ç©ºç™½å­—ç¬¦
     end = str + strlen(str) - 1;
     while (end > str && (*end == ' ' || *end == '\t' || *end == '\n' || *end == '\r')) {
         end--;
     }
-    *(end + 1) = '\0';  // ÔÚÄ©Î²Ìí¼Ó×Ö·û´®½áÊø·û
+    *(end + 1) = '\0';  // åœ¨æœ«å°¾æ·»åŠ å­—ç¬¦ä¸²ç»“æŸç¬¦
     return str;
 }
 
 
-// ¶ÁÈ¡Í¼ÊéÎÄ¼þ£¬·µ»ØÍ¼ÊéÁ´±íÍ·Ö¸Õë
+// è¯»å–å›¾ä¹¦æ–‡ä»¶ï¼Œè¿”å›žå›¾ä¹¦é“¾è¡¨å¤´æŒ‡é’ˆ
 bookList readBookFile(const char* fileName) {
-    FILE* file = fopen(fileName, "r");  // ÒÔÖ»¶Á·½Ê½´ò¿ªÎÄ¼þ
-    if (file == NULL) {
-        return NULL;  // ÎÄ¼þ´ò¿ªÊ§°Ü£¬·µ»Ø¿ÕÖ¸Õë
-    }
+    FILE* file = fopen(fileName, "r");  // ä»¥åªè¯»æ–¹å¼æ‰“å¼€æ–‡ä»¶
 
-    // ´´½¨Í·½Úµã£¨ÉÚ±ø½Úµã£©
+    // åˆ›å»ºå¤´èŠ‚ç‚¹ï¼ˆå“¨å…µèŠ‚ç‚¹ï¼‰
     bookList head = (bookList)malloc(sizeof(book));
     if (head == NULL) {
-        fclose(file);
+        if (file != NULL) fclose(file);
         return NULL;
     }
     head->next = NULL;
-    bookList tail = head;  // Î²Ö¸ÕëÓÃÓÚ¸ßÐ§×·¼Ó
 
-    char line[1024];  // ÐÐ»º³åÇø
+    if (file == NULL) {
+        // æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼Œè¿”å›žåªæœ‰å¤´èŠ‚ç‚¹çš„ç©ºé“¾è¡¨
+        return head;
+    }
 
-    // Ìø¹ýCSV±êÌâÐÐ£¨Èç¹ûÓÐ£©
+    bookList tail = head;  // å°¾æŒ‡é’ˆç”¨äºŽé«˜æ•ˆè¿½åŠ 
+    char line[1024];  // è¡Œç¼“å†²åŒº
+
+    // è·³è¿‡CSVæ ‡é¢˜è¡Œï¼ˆå¦‚æžœæœ‰ï¼‰
     fgets(line, sizeof(line), file);
 
-    // ÖðÐÐ¶ÁÈ¡Êý¾Ý
+    // é€è¡Œè¯»å–æ•°æ®
     while (fgets(line, sizeof(line), file)) {
-        // ´´½¨ÐÂ½Úµã
+        // åˆ›å»ºæ–°èŠ‚ç‚¹
         bookList newNode = (bookList)malloc(sizeof(book));
         if (newNode == NULL) {
             fclose(file);
-            return head;  // ·µ»ØÒÑ¶ÁÈ¡µÄ²¿·ÖÁ´±í
+            return head;  // è¿”å›žå·²è¯»å–çš„éƒ¨åˆ†é“¾è¡¨
         }
 
-        // ³õÊ¼»¯Ö¸Õë³ÉÔ±
+        // åˆå§‹åŒ–æŒ‡é’ˆæˆå‘˜
         newNode->name = NULL;
         newNode->author = NULL;
         newNode->publisher = NULL;
@@ -61,42 +64,42 @@ bookList readBookFile(const char* fileName) {
         newNode->next = NULL;
 
         char* token;
-        // ¶ÁÈ¡Í¼ÊéID
+        // è¯»å–å›¾ä¹¦ID
         token = strtok(line, ",");
         if (token == NULL) continue;
         newNode->id = atoi(trim(token));
 
-        // ¶ÁÈ¡Í¼ÊéÃû³Æ£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–å›¾ä¹¦åç§°ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->name = strdup(trim(token));
 
-        // ¶ÁÈ¡×÷Õß£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–ä½œè€…ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->author = strdup(trim(token));
 
-        // ¶ÁÈ¡³ö°æÉç£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–å‡ºç‰ˆç¤¾ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->publisher = strdup(trim(token));
 
-        // ¶ÁÈ¡³ö°æÄê·Ý
+        // è¯»å–å‡ºç‰ˆå¹´ä»½
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->year = atoi(trim(token));
 
-        // ¶ÁÈ¡ISBN
+        // è¯»å–ISBN
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->ISBN = atoi(trim(token));
 
-        // ¶ÁÈ¡½èÔÄ×´Ì¬
+        // è¯»å–å€Ÿé˜…çŠ¶æ€
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->isBorrowed = (strcmp(trim(token), "true") == 0);
 
-        // ¶ÁÈ¡½èÔÄÕß£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–å€Ÿé˜…è€…ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token != NULL) {
             newNode->borrowedBy = strdup(trim(token));
@@ -105,26 +108,26 @@ bookList readBookFile(const char* fileName) {
             newNode->borrowedBy = NULL;
         }
 
-        // ½«ÐÂ½ÚµãÌí¼Óµ½Á´±íÎ²²¿
+        // å°†æ–°èŠ‚ç‚¹æ·»åŠ åˆ°é“¾è¡¨å°¾éƒ¨
         tail->next = newNode;
         tail = newNode;
     }
 
     fclose(file);
-    return head;  // ·µ»Ø´øÍ·½ÚµãµÄÁ´±í
+    return head;  // è¿”å›žå¸¦å¤´èŠ‚ç‚¹çš„é“¾è¡¨
 }
 
-// ½«Í¼ÊéÁ´±íÐ´ÈëÎÄ¼þ
+// å°†å›¾ä¹¦é“¾è¡¨å†™å…¥æ–‡ä»¶
 void writeBookFile(const char* fileName, bookList head) {
-    FILE* file = fopen(fileName, "w");  // ÒÔÐ´Èë·½Ê½´ò¿ªÎÄ¼þ
+    FILE* file = fopen(fileName, "w");  // ä»¥å†™å…¥æ–¹å¼æ‰“å¼€æ–‡ä»¶
     if (file == NULL || head == NULL) {
-        return;  // ÎÄ¼þ´ò¿ªÊ§°Ü»òÁ´±íÎª¿Õ£¬Ö±½Ó·µ»Ø
+        return;  // æ–‡ä»¶æ‰“å¼€å¤±è´¥æˆ–é“¾è¡¨ä¸ºç©ºï¼Œç›´æŽ¥è¿”å›ž
     }
 
-    // Ð´ÈëCSV±êÌâÐÐ
+    // å†™å…¥CSVæ ‡é¢˜è¡Œ
     fprintf(file, "ID,Name,Author,Publisher,Year,ISBN,IsBorrowed,BorrowedBy\n");
-	int id = 1;  // ´Ó1¿ªÊ¼µÝÔöID
-    // ±éÀúÁ´±í£¨Ìø¹ýÉÚ±ø½Úµã£©
+	int id = 1;  // ä»Ž1å¼€å§‹é€’å¢žID
+    // éåŽ†é“¾è¡¨ï¼ˆè·³è¿‡å“¨å…µèŠ‚ç‚¹ï¼‰
     bookList current = head->next;
     while (current != NULL) {
         fprintf(file, "%d,%s,%s,%s,%d,%d,%s,%s\n",
@@ -144,82 +147,83 @@ void writeBookFile(const char* fileName, bookList head) {
     fclose(file);
 }
 
-// ¶ÁÈ¡ÓÃ»§ÎÄ¼þ£¬·µ»Ø´øÍ·½ÚµãµÄÓÃ»§Á´±í
+// è¯»å–ç”¨æˆ·æ–‡ä»¶ï¼Œè¿”å›žå¸¦å¤´èŠ‚ç‚¹çš„ç”¨æˆ·é“¾è¡¨
 userList readUserFile(const char* fileName) {
-    FILE* file = fopen(fileName, "r");  // ÒÔÖ»¶Á·½Ê½´ò¿ªÎÄ¼þ
-    if (file == NULL) {
-        return NULL;  // ÎÄ¼þ´ò¿ªÊ§°Ü£¬·µ»ØNULL
-    }
+    FILE* file = fopen(fileName, "r");  // ä»¥åªè¯»æ–¹å¼æ‰“å¼€æ–‡ä»¶
 
-    // ´´½¨Í·½Úµã£¨ÉÚ±ø½Úµã£©
+
+    // åˆ›å»ºå¤´èŠ‚ç‚¹ï¼ˆå“¨å…µèŠ‚ç‚¹ï¼‰
     userList head = (userList)malloc(sizeof(user));
     if (head == NULL) {
         fclose(file);
         return NULL;
     }
     head->next = NULL;
-    userList tail = head;  // Î²Ö¸ÕëÓÃÓÚ¸ßÐ§×·¼Ó
+    if (file == NULL) {
+        return head;  // æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼Œè¿”å›žç©ºé“¾è¡¨
+    }
+    userList tail = head;  // å°¾æŒ‡é’ˆç”¨äºŽé«˜æ•ˆè¿½åŠ 
 
-    char line[1024];  // ÐÐ»º³åÇø
+    char line[1024];  // è¡Œç¼“å†²åŒº
 
-    // Ìø¹ýCSV±êÌâÐÐ£¨Èç¹ûÓÐ£©
+    // è·³è¿‡CSVæ ‡é¢˜è¡Œï¼ˆå¦‚æžœæœ‰ï¼‰
     fgets(line, sizeof(line), file);
 
-    // ÖðÐÐ¶ÁÈ¡Êý¾Ý
+    // é€è¡Œè¯»å–æ•°æ®
     while (fgets(line, sizeof(line), file)) {
-        // ´´½¨ÐÂ½Úµã
+        // åˆ›å»ºæ–°èŠ‚ç‚¹
         userList newNode = (userList)malloc(sizeof(user));
         if (newNode == NULL) {
             fclose(file);
-            return head;  // ·µ»ØÒÑ¶ÁÈ¡µÄ²¿·ÖÁ´±í
+            return head;  // è¿”å›žå·²è¯»å–çš„éƒ¨åˆ†é“¾è¡¨
         }
 
-        // ³õÊ¼»¯Ö¸Õë³ÉÔ±
+        // åˆå§‹åŒ–æŒ‡é’ˆæˆå‘˜
         newNode->name = NULL;
         newNode->username = NULL;
         newNode->password = NULL;
         newNode->next = NULL;
 
         char* token;
-        // ¶ÁÈ¡ÓÃ»§ID
+        // è¯»å–ç”¨æˆ·ID
         token = strtok(line, ",");
         if (token == NULL) continue;
         newNode->id = atoi(trim(token));
 
-        // ¶ÁÈ¡ÓÃ»§ÐÕÃû£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–ç”¨æˆ·å§“åï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->name = strdup(trim(token));
 
-        // ¶ÁÈ¡ÓÃ»§Ãû£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–ç”¨æˆ·åï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->username = strdup(trim(token));
 
-        // ¶ÁÈ¡ÃÜÂë£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–å¯†ç ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->password = strdup(trim(token));
 
-        // ½«ÐÂ½ÚµãÌí¼Óµ½Á´±íÎ²²¿
+        // å°†æ–°èŠ‚ç‚¹æ·»åŠ åˆ°é“¾è¡¨å°¾éƒ¨
         tail->next = newNode;
         tail = newNode;
     }
 
     fclose(file);
-    return head;  // ·µ»Ø´øÍ·½ÚµãµÄÁ´±í
+    return head;  // è¿”å›žå¸¦å¤´èŠ‚ç‚¹çš„é“¾è¡¨
 }
-// ½«ÓÃ»§Á´±íÐ´ÈëÎÄ¼þ
+// å°†ç”¨æˆ·é“¾è¡¨å†™å…¥æ–‡ä»¶
 void writeUserFile(const char* fileName, userList head) {
-    FILE* file = fopen(fileName, "w");  // ÒÔÐ´Èë·½Ê½´ò¿ªÎÄ¼þ
+    FILE* file = fopen(fileName, "w");  // ä»¥å†™å…¥æ–¹å¼æ‰“å¼€æ–‡ä»¶
     if (file == NULL || head == NULL) {
-        return;  // ÎÄ¼þ´ò¿ªÊ§°Ü»òÁ´±íÎª¿Õ£¬Ö±½Ó·µ»Ø
+        return;  // æ–‡ä»¶æ‰“å¼€å¤±è´¥æˆ–é“¾è¡¨ä¸ºç©ºï¼Œç›´æŽ¥è¿”å›ž
     }
 
-    // Ð´ÈëCSV±êÌâÐÐ
+    // å†™å…¥CSVæ ‡é¢˜è¡Œ
     fprintf(file, "ID,Name,Username,Password\n");
     int id = 1;
-    // ±éÀúÁ´±í£¨Ìø¹ýÉÚ±ø½Úµã£©
+    // éåŽ†é“¾è¡¨ï¼ˆè·³è¿‡å“¨å…µèŠ‚ç‚¹ï¼‰
     userList current = head->next;
     while (current != NULL) {
         fprintf(file, "%d,%s,%s,%s\n",
@@ -235,57 +239,57 @@ void writeUserFile(const char* fileName, userList head) {
     fclose(file);
 }
 
-// ¶ÁÈ¡¹ÜÀíÔ±ÎÄ¼þ£¬·µ»Ø´øÍ·½ÚµãµÄ¹ÜÀíÔ±Á´±í
+// è¯»å–ç®¡ç†å‘˜æ–‡ä»¶ï¼Œè¿”å›žå¸¦å¤´èŠ‚ç‚¹çš„ç®¡ç†å‘˜é“¾è¡¨
 adminList readAdminFile(const char* fileName) {
-    FILE* file = fopen(fileName, "r");  // ÒÔÖ»¶Á·½Ê½´ò¿ªÎÄ¼þ
-    if (file == NULL) {
-        return NULL;  // ÎÄ¼þ´ò¿ªÊ§°Ü£¬·µ»ØNULL
-    }
+    FILE* file = fopen(fileName, "r");  // ä»¥åªè¯»æ–¹å¼æ‰“å¼€æ–‡ä»¶
 
-    // ´´½¨Í·½Úµã£¨ÉÚ±ø½Úµã£©
+
+    // åˆ›å»ºå¤´èŠ‚ç‚¹ï¼ˆå“¨å…µèŠ‚ç‚¹ï¼‰
     adminList head = (adminList)malloc(sizeof(admin));
     if (head == NULL) {
         fclose(file);
         return NULL;
     }
     head->next = NULL;
-    adminList tail = head;  // Î²Ö¸ÕëÓÃÓÚ¸ßÐ§×·¼Ó
+    if (file == NULL) {
+        return head;  // æ–‡ä»¶æ‰“å¼€å¤±è´¥ï¼Œè¿”å›žç©ºé“¾è¡¨
+    }
+    adminList tail = head;  // å°¾æŒ‡é’ˆç”¨äºŽé«˜æ•ˆè¿½åŠ 
 
-    char line[1024];  // ÐÐ»º³åÇø
+    char line[1024];  // è¡Œç¼“å†²åŒº
 
-    // Ìø¹ýCSV±êÌâÐÐ£¨Èç¹ûÓÐ£©
-    fgets(line, sizeof(line), file);
 
-    // ÖðÐÐ¶ÁÈ¡Êý¾Ý
+
+    // é€è¡Œè¯»å–æ•°æ®
     while (fgets(line, sizeof(line), file)) {
-        // ´´½¨ÐÂ½Úµã
+        // åˆ›å»ºæ–°èŠ‚ç‚¹
         adminList newNode = (adminList)malloc(sizeof(admin));
         if (newNode == NULL) {
             fclose(file);
-            return head;  // ·µ»ØÒÑ¶ÁÈ¡µÄ²¿·ÖÁ´±í
+            return head;  // è¿”å›žå·²è¯»å–çš„éƒ¨åˆ†é“¾è¡¨
         }
 
-        // ³õÊ¼»¯Ö¸Õë³ÉÔ±
+        // åˆå§‹åŒ–æŒ‡é’ˆæˆå‘˜
         newNode->username = NULL;
         newNode->password = NULL;
         newNode->next = NULL;
 
         char* token;
-        // ¶ÁÈ¡¹ÜÀíÔ±ÓÃ»§Ãû£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–ç®¡ç†å‘˜ç”¨æˆ·åï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(line, ",");
         if (token == NULL) continue;
         newNode->username = strdup(trim(token));
 
-        // ¶ÁÈ¡ÃÜÂë£¨¶¯Ì¬·ÖÅäÄÚ´æ£©
+        // è¯»å–å¯†ç ï¼ˆåŠ¨æ€åˆ†é…å†…å­˜ï¼‰
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->password = strdup(trim(token));
 
-        // ½«ÐÂ½ÚµãÌí¼Óµ½Á´±íÎ²²¿
+        // å°†æ–°èŠ‚ç‚¹æ·»åŠ åˆ°é“¾è¡¨å°¾éƒ¨
         tail->next = newNode;
         tail = newNode;
     }
 
     fclose(file);
-    return head;  // ·µ»Ø´øÍ·½ÚµãµÄÁ´±í
+    return head;  // è¿”å›žå¸¦å¤´èŠ‚ç‚¹çš„é“¾è¡¨
 }

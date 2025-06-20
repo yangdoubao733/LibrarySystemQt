@@ -1,4 +1,4 @@
-#include <qlist.h>
+﻿#include <qlist.h>
 #include "usermainwindow.h"
 #include "ui_usermainwindow.h"
 #include "Book.h"
@@ -10,7 +10,7 @@
 #include <string.h>
 #include <login.h>
 
-
+extern QString login_UserName;
 
 UserMainWindow::UserMainWindow(QWidget *parent)
     : QWidget(parent)
