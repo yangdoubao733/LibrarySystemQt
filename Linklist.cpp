@@ -21,7 +21,7 @@ void DeleteBookLinkList(bookList& L) { // Delete the link list
 }
 void DeleteUserLinkList(userList& L) { // Delete the link list
 	if (L == NULL) return; // If the list is empty, do nothing
-	userList p = L; // Start from the first node
+	userList p = L->next; // Start from the first node
 	while (p != NULL) {
 		userList temp = p; // Store the current node
 		p = p->next; // Move to the next node

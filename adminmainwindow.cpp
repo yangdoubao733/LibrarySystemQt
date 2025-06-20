@@ -181,9 +181,13 @@ void AdminMainWindow::on_searchBookButton_clicked()
     while (p) {//遍历链表
         rowItems.clear();
         rowItems.append(new QStandardItem(QString::number(p->id)));
+		QMessageBox::warning(this, "调试", QString::fromUtf8(p->name), QMessageBox::Ok);
         rowItems.append(new QStandardItem(QString::fromUtf8(p->name)));
+		QMessageBox::warning(this, "调试", QString::fromUtf8(p->author), QMessageBox::Ok);
         rowItems.append(new QStandardItem(QString::fromUtf8(p->author)));
-        rowItems.append(new QStandardItem(QString::number(p->ISBN)));
+		QMessageBox::warning(this, "调试", QString::number(p->ISBN), QMessageBox::Ok);
+        rowItems.append(new QStandardItem(QString::number(p->ISBdrN)));
+		QMessageBox::warning(this, "调试", QString::number(p->year), QMessageBox::Ok);
         rowItems.append(new QStandardItem(QString::number(p->year)));
         model->appendRow(rowItems);
         p = p->next;
