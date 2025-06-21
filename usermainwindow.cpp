@@ -89,23 +89,24 @@ void UserMainWindow::on_searchBookButton_clicked()
     QString current_author = ui->Author->text();
 
     //查找图书
-    bookList foundBook=NULL;
-    book toSearchBook;
+    bookList foundBook= new book;
+	foundBook->next = NULL; // 初始化链表
+    book *toSearchBook = new book;
 
     if (current_bookName.isEmpty() && current_author.isEmpty()) {
         foundBook = bl->next; //如果没有输入任何条件，则显示所有图书
     }
     else {
-        toSearchBook.name = current_bookName.toUtf8().data();
-        toSearchBook.author = current_author.toUtf8().data();
+        toSearchBook->name = current_bookName.toUtf8().data();
+        toSearchBook->author = current_author.toUtf8().data();
         //第一次搜索 - 按书名、作者依次搜索
         if (!current_bookName.isEmpty()) {
             int i = 0;
-            SearchBook(toSearchBook, bl, 'n', foundBook, i);
+            SearchBook(*toSearchBook, bl, 'n', foundBook, i);
         }
         if (!current_author.isEmpty() && !foundBook) {
             int i = 0;
-            SearchBook(toSearchBook, bl, 'a', foundBook, i);
+            SearchBook(*toSearchBook, bl, 'a', foundBook, i);
         }
         // 二次搜索 - 在已找到的结果中继续筛选
         // 按年份再次筛选
@@ -113,10 +114,10 @@ void UserMainWindow::on_searchBookButton_clicked()
             int i = 0;
             bookList tempList = foundBook;
             foundBook = NULL;
-            SearchBook(toSearchBook, tempList, 'a', foundBook, i);
+            SearchBook(*toSearchBook, tempList, 'a', foundBook, i);
         }
 
-        if (!foundBook) {
+        if (!foundBook->next) {
             QMessageBox::information(this, "提示", "未找到相关图书！", QMessageBox::Ok);
             return;
         }
@@ -126,6 +127,7 @@ void UserMainWindow::on_searchBookButton_clicked()
     QStandardItemModel* model = new QStandardItemModel(0, 5, this);
     model->setHorizontalHeaderLabels({ "id", "书名", "作者" ,"ISBN", "出版日期" });//设置表头
     QList<QStandardItem*> rowItems;
+	foundBook = foundBook->next; //跳过头节点
     while (foundBook) {//遍历链表
         rowItems.clear();
         rowItems.append(new QStandardItem(QString::number(foundBook->id)));
@@ -160,12 +162,12 @@ void UserMainWindow::on_borrowBookButton_clicked()
     }
 
     // 查找图书
-    book tempBook{};
-    tempBook.id = bookId;
+    book *tempBook = new book;
+    tempBook->id = bookId;
     bookList foundBook = new book(); // 创建头节点
     foundBook->next = nullptr;
     int i = 0;
-    if (!SearchBook(tempBook, bl, 'i', foundBook, i)) {
+    if (!SearchBook(*tempBook, bl, 'i', foundBook, i)) {
         QMessageBox::warning(this, "警告", "未找到该图书！");
         delete foundBook;
         return;
@@ -253,8 +255,9 @@ void UserMainWindow::on_searchButton_clicked()
     model->setHorizontalHeaderLabels({ "id", "书名", "作者", "ISBN", "出版日期" });
 
     book* displayBook = foundBook->next;
+    QList<QStandardItem*> rowItems;
     while (displayBook) {
-        QList<QStandardItem*> rowItems;
+		rowItems.clear();
         rowItems.append(new QStandardItem(QString::number(displayBook->id)));
         rowItems.append(new QStandardItem(QString::fromUtf8(displayBook->name)));
         rowItems.append(new QStandardItem(QString::fromUtf8(displayBook->author)));

@@ -78,12 +78,7 @@ bookList readBookFile(const char* fileName) {
         token = strtok(NULL, ",");
         if (token == NULL) continue;
         newNode->author = strdup(trim(token));
-
-        // 读取出版社（动态分配内存）
-        token = strtok(NULL, ",");
-        if (token == NULL) continue;
-        newNode->publisher = strdup(trim(token));
-
+        
         // 读取出版年份
         token = strtok(NULL, ",");
         if (token == NULL) continue;
@@ -125,20 +120,19 @@ void writeBookFile(const char* fileName, bookList head) {
     }
 
     // 写入CSV标题行
-    fprintf(file, "ID,Name,Author,Publisher,Year,ISBN,IsBorrowed,BorrowedBy\n");
+    fprintf(file, "ID,Name,Author,Year,ISBN,IsBorrowed,BorrowedBy\n");
 	int id = 1;  // 从1开始递增ID
     // 遍历链表（跳过哨兵节点）
     bookList current = head->next;
     while (current != NULL) {
-        fprintf(file, "%d,%s,%s,%s,%d,%d,%s,%s\n",
+        fprintf(file, "%d,%s,%s,%d,%d,%s,%s\n",
             id,
-            current->name ? current->name : "",
-            current->author ? current->author : "",
-            current->publisher ? current->publisher : "",
-            current->year ? (char*)current->year : "",
-            current->ISBN ? (char*)current->ISBN : "",
+            current->name ? current->name : nullptr,
+            current->author ? current->author : nullptr,
+            current->year,
+            current->ISBN,
             current->isBorrowed ? "true" : "false",
-            current->borrowedBy ? current->borrowedBy : "");
+            current->borrowedBy ? current->borrowedBy : nullptr);
 
         current = current->next;
         id++;
@@ -228,9 +222,9 @@ void writeUserFile(const char* fileName, userList head) {
     while (current != NULL) {
         fprintf(file, "%d,%s,%s,%s\n",
             id,
-            current->name ? current->name : "",
-            current->username ? current->username : "",
-            current->password ? current->password : "");
+            current->name ? current->name : nullptr,
+            current->username ? current->username : nullptr,
+            current->password ? current->password : nullptr);
 
         current = current->next;
 		id++;

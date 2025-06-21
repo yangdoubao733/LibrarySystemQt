@@ -40,7 +40,7 @@ AdminMainWindow::AdminMainWindow(QWidget *parent)
     }
     ui->bookTableView->setModel(model);
 	QMessageBox::information(this, "提示", "欢迎使用图书馆管理系统！", QMessageBox::Ok);
-	DeleteBookLinkList(bl); //释放链表内存
+	//DeleteBookLinkList(bl); //释放链表内存
 }
 
 AdminMainWindow::~AdminMainWindow()
@@ -53,12 +53,14 @@ AdminMainWindow::~AdminMainWindow()
 void AdminMainWindow::on_bookManage_2_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
+    AdminMainWindow::on_searchBookButton_clicked();
 }
 
 //主页面跳转用户管理
 void AdminMainWindow::on_userManage_2_clicked()
 {
     ui->stackedWidget->setCurrentIndex(2);
+    AdminMainWindow::on_searchUserButton_clicked();
 }
 
 //主页面退出
@@ -71,6 +73,7 @@ void AdminMainWindow::on_exitButton_2_clicked()
 void AdminMainWindow::on_userManage_clicked()
 {
     ui->stackedWidget->setCurrentIndex(2);
+    AdminMainWindow::on_searchUserButton_clicked();
 }
 
 //图书页面退出
@@ -181,20 +184,16 @@ void AdminMainWindow::on_searchBookButton_clicked()
     while (p) {//遍历链表
         rowItems.clear();
         rowItems.append(new QStandardItem(QString::number(p->id)));
-		QMessageBox::warning(this, "调试", QString::fromUtf8(p->name), QMessageBox::Ok);
         rowItems.append(new QStandardItem(QString::fromUtf8(p->name)));
-		QMessageBox::warning(this, "调试", QString::fromUtf8(p->author), QMessageBox::Ok);
         rowItems.append(new QStandardItem(QString::fromUtf8(p->author)));
-		QMessageBox::warning(this, "调试", QString::number(p->ISBN), QMessageBox::Ok);
-        rowItems.append(new QStandardItem(QString::number(p->ISBdrN)));
-		QMessageBox::warning(this, "调试", QString::number(p->year), QMessageBox::Ok);
-        rowItems.append(new QStandardItem(QString::number(p->year)));
+        rowItems.append(new QStandardItem(QString::number(p->ISBN))); // ISBN
+        rowItems.append(new QStandardItem(QString::number(p->year))); // 出版日期
         model->appendRow(rowItems);
         p = p->next;
     }
     ui->bookTableView->setModel(model);
-	DeleteBookLinkList(foundBook); //释放链表内存
-	DeleteBookLinkList(bl); //释放链表内存
+	//DeleteBookLinkList(foundBook); //释放链表内存
+	//DeleteBookLinkList(bl); //释放链表内存
 }
 
 //图书页面 添加图书
@@ -206,10 +205,6 @@ void AdminMainWindow::on_addBookButton_clicked()
 	addedBook->author = strdup(ui->Author->text().toUtf8().data());
 	addedBook->year = ui->Year->text().toInt();
     addedBook->publisher = strdup("");
-    QMessageBox::warning(this, "调试", ui->bookName->text(), QMessageBox::Ok);
-    QMessageBox::warning(this, "调试", ui->ISBN->text(), QMessageBox::Ok);
-    QMessageBox::warning(this, "调试", ui->Author->text(), QMessageBox::Ok);
-    QMessageBox::warning(this, "调试", ui->Year->text(), QMessageBox::Ok);
 
     if (ui->bookName->text().isEmpty() || ui->ISBN->text().isEmpty() || ui->Author->text().isEmpty() || ui->Year->text().isEmpty()) {
         QMessageBox::warning(this, "错误", "有信息未填写！", QMessageBox::Ok);
@@ -228,11 +223,12 @@ void AdminMainWindow::on_addBookButton_clicked()
     }
     
 	writeBookFile(BOOKPATH, bl); //写入文件
-	DeleteBookLinkList(bl); //释放链表内存
+	//DeleteBookLinkList(bl); //释放链表内存
     ui->bookName->clear();
 	ui->ISBN->clear();
 	ui->Author->clear();
 	ui->Year->clear();
+    AdminMainWindow::on_searchBookButton_clicked();
 	QMessageBox::information(this, "提示", "图书添加成功！", QMessageBox::Ok);
     
 }
@@ -264,11 +260,12 @@ void AdminMainWindow::on_deleteBookButton_clicked()
         return;
     }
     writeBookFile(BOOKPATH, bl); //写入文件
-    DeleteBookLinkList(bl); //释放链表内存
+    //DeleteBookLinkList(bl); //释放链表内存
     ui->bookName->clear();
     ui->ISBN->clear();
     ui->Author->clear();
     ui->Year->clear();
+    AdminMainWindow::on_searchBookButton_clicked();
 	QMessageBox::information(this, "提示", "图书删除成功！", QMessageBox::Ok);
 }
 
@@ -276,6 +273,7 @@ void AdminMainWindow::on_deleteBookButton_clicked()
 void AdminMainWindow::on_bookManage_3_clicked()
 {
     ui->stackedWidget->setCurrentIndex(1);
+    AdminMainWindow::on_searchBookButton_clicked();
 
 }
 
@@ -340,7 +338,7 @@ void AdminMainWindow::on_searchUserButton_clicked()
             }
             foundUser->next = NULL;
             SearchUser(*toSearchUser, tempList, 'n', foundUser, i);
-			DeleteUserLinkList(tempList); //释放临时链表内存
+			//DeleteUserLinkList(tempList); //释放临时链表内存
         }
 
         // 按密码再次筛选
@@ -353,13 +351,13 @@ void AdminMainWindow::on_searchUserButton_clicked()
             }
             foundUser->next = NULL;
             SearchUser(*toSearchUser, tempList, 'p', foundUser, i);
-			DeleteUserLinkList(tempList); //释放临时链表内存
+			//DeleteUserLinkList(tempList); //释放临时链表内存
         }
 
         if (!foundUser->next) {
             QMessageBox::information(this, "提示", "未找到相关用户！", QMessageBox::Ok);
-            DeleteUserLinkList(foundUser);
-            DeleteUserLinkList(ul);
+            //DeleteUserLinkList(foundUser);
+            //DeleteUserLinkList(ul);
             return;
         }
     }
@@ -372,15 +370,15 @@ void AdminMainWindow::on_searchUserButton_clicked()
     while (foundUser) {//遍历链表
         rowItems.clear();
 		rowItems.append(new QStandardItem(QString::number(foundUser->id)));
-		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->username)));
 		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->name)));
+		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->username)));
 		rowItems.append(new QStandardItem(QString::fromUtf8(foundUser->password)));
         model->appendRow(rowItems);
         foundUser = foundUser->next;
     }
     ui->userTableView->setModel(model);
-    DeleteUserLinkList(foundUser); //释放链表内存
-    DeleteUserLinkList(ul); //释放链表内存
+    //DeleteUserLinkList(foundUser); //释放链表内存
+    //DeleteUserLinkList(ul); //释放链表内存
 
 }
 
@@ -393,7 +391,7 @@ void AdminMainWindow::on_addUserButton_clicked()
 	addedUser->password = strdup(ui->password->text().toUtf8().data());
 
     userList ul;
-    ul = readUserFile(BOOKPATH);
+    ul = readUserFile(USERPATH);
     if (ul == NULL) {
         QMessageBox::warning(this, "错误", "无法读取用户文件！", QMessageBox::Ok);
         return;
@@ -403,17 +401,19 @@ void AdminMainWindow::on_addUserButton_clicked()
         return;
     }
     writeUserFile(USERPATH, ul); //写入文件
-    DeleteUserLinkList(ul); //释放链表内存
+    //DeleteUserLinkList(ul); //释放链表内存
     ui->userName->clear();
     ui->name->clear();
     ui->password->clear();
+    AdminMainWindow::on_searchUserButton_clicked();
+    QMessageBox::information(this, "提示", "用户添加成功！", QMessageBox::Ok);
 }
 
 //用户页面 删除用户
 void AdminMainWindow::on_deleteUserButton_clicked()
 {
     QList<QModelIndex> list = ui->userTableView->selectionModel()->selectedIndexes();
-    if (!list.isEmpty()) {
+    if (list.isEmpty()) {
         QMessageBox::warning(this, "错误", "请先选择要删除的用户！", QMessageBox::Ok);
         return;
     }
@@ -434,9 +434,11 @@ void AdminMainWindow::on_deleteUserButton_clicked()
         return;
     }
     writeUserFile(USERPATH, ul); //写入文件
-    DeleteUserLinkList(ul); //释放链表内存
+    //DeleteUserLinkList(ul); //释放链表内存
     ui->userName->clear();
     ui->name->clear();
     ui->password->clear();
+    AdminMainWindow::on_searchUserButton_clicked();
+    QMessageBox::information(this, "提示", "用户删除成功！", QMessageBox::Ok);
 }
 

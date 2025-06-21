@@ -46,6 +46,14 @@ bool SearchBook(book Book, bookList L, char method, bookList foundBook, int &i) 
 					i++;  // 增加已找到的图书数量
 				}
 				break;
+			case 'i':  // 按ID查找
+				if (p->id == Book.id) {
+					book* newBook = new book(*p);  // 创建新图书
+					fb->next = newBook;  // 将找到的图书信息存入数组
+					i++;  // 增加已找到的图书数量
+					return true;
+				}
+				break;
 			
 		}
 		p = p->next;  // 移动到下一个图书
@@ -68,7 +76,6 @@ bool AddBook(book Book, bookList &L) {  // 添加图书函数
 	book* newBook = new book;
 	newBook->name = strdup(Book.name);
 	newBook->author = strdup(Book.author);
-	newBook->publisher = Book.publisher ? strdup(Book.publisher) : nullptr;
 	newBook->year = Book.year;
 	newBook->ISBN = Book.ISBN;
 	newBook->isBorrowed = false;
@@ -107,7 +114,6 @@ bool ModifyBook(book bookPre, book bookMod, bookList L) {  // 修改图书函数
 			p->ISBN = bookMod.ISBN;
 			strcpy(p->name, bookMod.name);
 			strcpy(p->author, bookMod.author);
-			strcpy(p->publisher, bookMod.publisher);
 			p->year = bookMod.year;
 			p->isBorrowed = bookMod.isBorrowed;
 			return true;  // 修改成功
@@ -125,7 +131,7 @@ int BorrowBook(book Book, bookList L, char* userName) {  // 借阅图书函数
 	while (p) {
 		if (p->id == Book.id) {  // 找到要借阅的图书
 			p->isBorrowed = true;  // 标记为已借阅
-			p->borrowedBy = userName;  // 记录借阅者ID
+			p->borrowedBy = strdup(userName);  // 记录借阅者ID
 			return true;  // 修改成功
 		}
 		p = p->next;  // 移动到下一个图书
